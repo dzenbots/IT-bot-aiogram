@@ -1,3 +1,4 @@
+from data.config import ADMIN_ID
 from utils.db_api.models import Group, User, Links, db
 
 
@@ -8,6 +9,15 @@ def initialize_db():
         User,
         Links
     ], safe=True)
-    Group.get_or_create(group_name='Admins')
-    Group.get_or_create(group_name='Users')
+    admin_group, created = Group.get_or_create(group_name='Admins')
+    user_group, created = Group.get_or_create(group_name='Users')
     Group.get_or_create(group_name='Unauthorized')
+    root, created = User.get_or_create(telegram_id=ADMIN_ID,
+                                       first_name='Dzen',
+                                       last_name='Bots',
+                                       nickname='DzenBots',
+                                       status='')
+    Links.get_or_create(user=root,
+                        group=admin_group)
+    Links.get_or_create(user=root,
+                        group=user_group)

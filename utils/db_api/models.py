@@ -2,7 +2,7 @@ from peewee import CharField, ForeignKeyField, SqliteDatabase, Model
 
 from data.config import DB_FILE_PATH
 
-db = SqliteDatabase(DB_FILE_PATH, pragmas={'foreign_keys: 1'})
+db = SqliteDatabase(DB_FILE_PATH, pragmas={'foreign_keys': 1})
 
 
 class BaseModel(Model):
