@@ -3,3 +3,6 @@ aiohttp
 aioredis
 python-dotenv
 loguru
+peewee
+aiohttp_socks
+loguru
