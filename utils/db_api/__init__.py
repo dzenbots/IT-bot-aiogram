@@ -15,7 +15,7 @@ def initialize_db():
     root, created = User.get_or_create(telegram_id=ADMIN_ID,
                                        first_name='Dzen',
                                        last_name='Bots',
-                                       nickname='DzenBots',
+                                       username='DzenBots',
                                        status='')
     Links.get_or_create(user=root,
                         group=admin_group)

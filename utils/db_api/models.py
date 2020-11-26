@@ -18,7 +18,7 @@ class User(BaseModel):
     telegram_id = CharField(unique=True)
     first_name = CharField()
     last_name = CharField()
-    nickname = CharField()
+    username = CharField()
     status = CharField()
 
 
