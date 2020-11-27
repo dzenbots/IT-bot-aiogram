@@ -12,8 +12,8 @@ from utils.db_api import Links, User, Group
 
 @dp.callback_query_handler(tuser_callback_datas.filter(func='add_Tuser'))
 async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Admins'):
-        await call.answer(cache_time=1)
         user_id_to_add = callback_data.get('user_id')
         user = User.get(id=user_id_to_add)
         await call.message.edit_text(text='В какую группу добавить пользователя?',
@@ -22,8 +22,8 @@ async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(tuser_callback_datas.filter(func='rm_Tuser'))
 async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Admins'):
-        await call.answer(cache_time=1)
         user_id_to_add = callback_data.get('user_id')
         user = User.get(id=user_id_to_add)
         await call.message.edit_text(text='Из какой группы удалить пользователя?',
@@ -32,8 +32,8 @@ async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(add_to_group_datas.filter())
 async def add_tuser_to_group(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Admins'):
-        await call.answer(cache_time=1)
         user = User.get(id=callback_data.get('user_id'))
         group = Group.get(id=callback_data.get('group_id'))
         Links.get_or_create(user=user,
@@ -54,8 +54,8 @@ async def add_tuser_to_group(call: CallbackQuery, callback_data: dict):
 
 @dp.callback_query_handler(rm_from_group_datas.filter())
 async def rm_user_from_group(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Admins'):
-        await call.answer(cache_time=1)
         user = User.get(id=callback_data.get('user_id'))
         group = Group.get(id=callback_data.get('group_id'))
         Links.get(user=user, group=group).delete_instance()

@@ -8,17 +8,18 @@ def get_main_inline_keyboard(user: User):
     inline_keyboard = []
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Zavhoz'):
         inline_keyboard.append([
-            InlineKeyboardButton(text=' 🔍 Проверить расположение оборудования', callback_data='123')
+            InlineKeyboardButton(text=' 🔍 Проверить расположение оборудования',
+                                 callback_data='main_check_equipment')
         ])
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Inventarization'):
         inline_keyboard.append([
             InlineKeyboardButton(text=' 🔍 Поиск и перемещение оборудования',
-                                 callback_data='132')
+                                 callback_data='main_inventarization')
         ])
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Users'):
         inline_keyboard.append([
             InlineKeyboardButton(text=' ☎️ Телефонный справочник',
-                                 callback_data='144')
+                                 callback_data='main_phones_searcher')
         ])
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'SysAdmins'):
         inline_keyboard.append([
