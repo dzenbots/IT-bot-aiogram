@@ -2,7 +2,7 @@ from aiogram.types import Message
 from loguru import logger
 
 from data.config import admins
-from keyboards.inline.Tuser_buttons import get_add_tuser_keyboard
+from keyboards.inline import get_add_tuser_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group
 
@@ -27,10 +27,10 @@ Groups: {groups_list}
 
 
 async def is_valid_user(telegram_chat, group_name='Users'):
-    user = None
     try:
         user = User.get(telegram_id=str(telegram_chat.id))
     except Exception as err:
+        logger.info(err)
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
                                            first_name=telegram_chat.first_name,
@@ -53,7 +53,7 @@ async def is_valid_user(telegram_chat, group_name='Users'):
     return True
 
 
-async def check_valid(message: Message, group_name='Admins'):
+async def check_valid_tuser(message: Message, group_name='Admins'):
     if not is_private(message.chat):
         return False
     telegram_chat = message.chat

@@ -1,0 +1,36 @@
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+from data.config import IT_SUPPORT_FORM, IT_SUPPORT_TABLE
+from utils.db_api import User, Group, Links
+
+
+def get_main_inline_keyboard(user: User):
+    inline_keyboard = []
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Zavhoz'):
+        inline_keyboard.append([
+            InlineKeyboardButton(text=' 🔍 Проверить расположение оборудования', callback_data='123')
+        ])
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Inventariation'):
+        inline_keyboard.append([
+            InlineKeyboardButton(text=' 🔍 Поиск и перемещение оборудования',
+                                 callback_data='132')
+        ])
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Users'):
+        inline_keyboard.append([
+            InlineKeyboardButton(text=' ☎️ Телефонный справочник',
+                                 callback_data='144')
+        ])
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'SysAdmins'):
+        inline_keyboard.append([
+            InlineKeyboardButton(text=' 📋 Таблица заявок',
+                                 url=IT_SUPPORT_TABLE)
+        ])
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Users'):
+        inline_keyboard.append([
+            InlineKeyboardButton(text=' 🆘 Форма обращений в IT-службу',
+                                 url=IT_SUPPORT_FORM)
+        ])
+    ret_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=inline_keyboard
+    )
+    return ret_keyboard
