@@ -1,5 +1,5 @@
 from data.config import ADMIN_ID
-from utils.db_api.models import Group, User, Links, db
+from .models import Group, User, Links, db
 
 
 def initialize_db():
@@ -25,4 +25,3 @@ def initialize_db():
                         group=admin_group)
     Links.get_or_create(user=root,
                         group=user_group)
-

@@ -92,3 +92,15 @@ async def user_add_new_group(message: Message, group_name: str):
             await message.answer(text='Группа создана')
             await message.answer(text='Выбите действие',
                                  reply_markup=group_function_keyboard)
+
+
+async def make_invent_num_search(message: Message):
+    if await check_valid_tuser(message=message, group_name='Inventarization') or \
+            await check_valid_tuser(message=message, group_name='Zavhoz'):
+        pass
+
+
+async def make_serial_num_search(message: Message):
+    if await check_valid_tuser(message=message, group_name='Inventarization') or \
+            await check_valid_tuser(message=message, group_name='Zavhoz'):
+        pass
