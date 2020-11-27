@@ -15,6 +15,7 @@ def initialize_db():
     Group.get_or_create(group_name='Zavhoz')
     Group.get_or_create(group_name='SysAdmins')
     Group.get_or_create(group_name='Inventarization')
+    Group.get_or_create(group_name='PhonesAdmin')
     root, created = User.get_or_create(telegram_id=ADMIN_ID,
                                        first_name='Dzen',
                                        last_name='Bots',

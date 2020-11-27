@@ -10,7 +10,7 @@ def get_main_inline_keyboard(user: User):
         inline_keyboard.append([
             InlineKeyboardButton(text=' 🔍 Проверить расположение оборудования', callback_data='123')
         ])
-    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Inventariation'):
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Inventarization'):
         inline_keyboard.append([
             InlineKeyboardButton(text=' 🔍 Поиск и перемещение оборудования',
                                  callback_data='132')

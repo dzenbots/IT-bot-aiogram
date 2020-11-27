@@ -30,7 +30,6 @@ async def is_valid_user(telegram_chat, group_name='Users'):
     try:
         user = User.get(telegram_id=str(telegram_chat.id))
     except Exception as err:
-        logger.info(err)
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
                                            first_name=telegram_chat.first_name,

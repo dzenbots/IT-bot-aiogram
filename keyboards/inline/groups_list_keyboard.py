@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-group_list_keyboard = InlineKeyboardMarkup(
+group_function_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(text='Список существующих групп', callback_data='group_list')
