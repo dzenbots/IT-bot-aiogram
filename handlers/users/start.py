@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 from keyboards.default import main_keyboard
 from keyboards.inline import get_main_inline_keyboard
 from loader import dp
-from handlers.users.help_functions import is_valid_user, is_private
+from utils.help_functions import is_valid_user, is_private
 from utils.db_api import User
 
 

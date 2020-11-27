@@ -1,10 +1,11 @@
 from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery
 
-from handlers.users.help_functions import check_valid_tuser
+from keyboards.inline.groups_list_keyboard import group_list_to_chose_rm, group_callback_datas, group_function_keyboard
+from utils.help_functions import check_valid_tuser
 from keyboards.inline import get_groups_list_to_rm_keyboard
 from loader import dp
-from utils.db_api import Group, User
+from utils.db_api import Group, User, Links
 
 
 @dp.callback_query_handler(Text(equals='group_list'))
@@ -23,7 +24,7 @@ async def add_new_groups(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Admins'):
         user = User.get(telegram_id=call.message.chat.id)
-        User.update(status="adding new group").where(User.id == user.id)
+        User.update(status="adding new group").where(User.id == user.id).execute()
         await call.message.edit_text(text='Введите имя новой группы')
 
 
@@ -33,5 +34,17 @@ async def add_new_groups(call: CallbackQuery):
     if await check_valid_tuser(message=call.message, group_name='Admins'):
         user = User.get(telegram_id=call.message.chat.id)
         User.update(status="removing group").where(User.id == user.id)
-        await call.message.edit_text(text='Выберите группу для удаления', reply_markup=get_groups_list_to_rm_keyboard(
-            user=user))
+        await call.message.edit_text(text='Выберите группу для удаления', reply_markup=group_list_to_chose_rm())
+
+
+@dp.callback_query_handler(group_callback_datas.filter())
+async def remove_group(call: CallbackQuery, callback_data: dict):
+    await call.answer(cache_time=1)
+    if await check_valid_tuser(message=call.message, group_name='Admins'):
+        group_id_to_remove = callback_data.get('group_id')
+        group = Group.get(id=group_id_to_remove)
+        for link in Links.select(Links).join(Group).where(Group.id == group.id):
+            link.delete_instance()
+        group.delete_instance()
+        await call.message.edit_text(text='Выбите действие',
+                                     reply_markup=group_function_keyboard)

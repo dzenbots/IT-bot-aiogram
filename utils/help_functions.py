@@ -2,15 +2,9 @@ from aiogram.types import Message
 from loguru import logger
 
 from data.config import admins
-from keyboards.inline import get_add_tuser_keyboard
+from keyboards.inline import get_add_tuser_keyboard, group_function_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group
-
-
-def is_private(chat):
-    if chat.type == 'private':
-        return True
-    return False
 
 
 def get_tuser_info(user: User):
@@ -26,10 +20,31 @@ Groups: {groups_list}
 """
 
 
+def get_help_message(user: User):
+    text = ''
+    if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Admins'):
+        text += '/all_users - Информация о подключавшихся пользователях\n\n'
+        text += '/groups - действия с группами пользователей\n\n'
+        text += '/google_update - подгрузить новое оборудование из таблицы Инвентаризация\n\n'
+        text += '/phones_update - подгрузить новых сотрудников в телефонный справочник'
+
+    if text == '':
+        text = '<b>У Вас пока нет никаких вспомогательных функций</b>'
+    else:
+        text = '<b>Список доступных вспомогательных функций</b>\n\n' + text
+    return text
+
+
+def is_private(chat):
+    if chat.type == 'private':
+        return True
+    return False
+
+
 async def is_valid_user(telegram_chat, group_name='Users'):
     try:
         user = User.get(telegram_id=str(telegram_chat.id))
-    except Exception as err:
+    except Exception:
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
                                            first_name=telegram_chat.first_name,
@@ -60,3 +75,18 @@ async def check_valid_tuser(message: Message, group_name='Admins'):
         await message.answer(text='У Вас нет доступа к этой функции!')
         return False
     return True
+
+
+async def user_add_new_group(message: Message, group_name: str):
+    if await check_valid_tuser(message=message, group_name='Admins'):
+        user = User.get(telegram_id=message.chat.id)
+        new_group, created = Group.get_or_create(group_name=group_name)
+        if not created:
+            await message.answer(text='Группа с таким именем уже существует')
+            await message.answer(text='Выбите действие',
+                                 reply_markup=group_function_keyboard)
+        else:
+            await message.answer(text='Группа создана')
+            await message.answer(text='Выбите действие',
+                                 reply_markup=group_function_keyboard)
+        User.update(status='').where(User.id == user.id).execute()

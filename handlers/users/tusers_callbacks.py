@@ -1,6 +1,6 @@
 from aiogram.types import CallbackQuery
 
-from handlers.users.help_functions import check_valid_tuser, get_tuser_info
+from utils.help_functions import check_valid_tuser, get_tuser_info
 from keyboards.default import main_keyboard
 from keyboards.inline import get_groups_list_to_add_keyboard, get_main_inline_keyboard, get_groups_list_to_rm_keyboard, \
     get_tuser_keyboard
