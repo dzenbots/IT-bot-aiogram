@@ -91,4 +91,4 @@ async def user_add_new_group(message: Message, group_name: str):
             logger.info(f'User {user.id} added new group {new_group.group_name}')
             await message.answer(text='Группа создана')
             await message.answer(text='Выбите действие',
-                                 reply_markup=group_function_keyboard)ß
+                                 reply_markup=group_function_keyboard)
