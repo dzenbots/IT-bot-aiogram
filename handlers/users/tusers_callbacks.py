@@ -1,4 +1,5 @@
 from aiogram.types import CallbackQuery
+from loguru import logger
 
 from utils.help_functions import check_valid_tuser, get_tuser_info
 from keyboards.default import main_keyboard
@@ -39,6 +40,7 @@ async def add_tuser_to_group(call: CallbackQuery, callback_data: dict):
                             group=group)
         if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Unauthorized'):
             Links.get(user=user, group=Group.get(group_name='Unauthorized')).delete_instance()
+        logger.info(f'User {user.id} was joined to group {group.group_name}')
         user = User.get(id=callback_data.get('user_id'))
         await call.message.edit_text(text=get_tuser_info(user=user),
                                      reply_markup=get_tuser_keyboard(user=user))
@@ -59,6 +61,7 @@ async def rm_user_from_group(call: CallbackQuery, callback_data: dict):
         Links.get(user=user, group=group).delete_instance()
         if Group.select(Group).join(Links).join(User).where(User.id == user.id).count() < 1:
             Links.get_or_create(user=user, group=Group.get(group_name='Unauthorized'))
+        logger.info(f'User {user.id} was excluded from group {group.group_name}')
         user = User.get(id=callback_data.get('user_id'))
         await call.message.edit_text(text=get_tuser_info(user=user),
                                      reply_markup=get_tuser_keyboard(user=user))

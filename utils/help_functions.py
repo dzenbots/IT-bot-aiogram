@@ -81,12 +81,14 @@ async def user_add_new_group(message: Message, group_name: str):
     if await check_valid_tuser(message=message, group_name='Admins'):
         user = User.get(telegram_id=message.chat.id)
         new_group, created = Group.get_or_create(group_name=group_name)
+        User.update(status='').where(User.id == user.id).execute()
         if not created:
+            logger.info(f'User {user.id} added new group {new_group.group_name}')
             await message.answer(text='Группа с таким именем уже существует')
             await message.answer(text='Выбите действие',
                                  reply_markup=group_function_keyboard)
         else:
+            logger.info(f'User {user.id} added new group {new_group.group_name}')
             await message.answer(text='Группа создана')
             await message.answer(text='Выбите действие',
                                  reply_markup=group_function_keyboard)
-        User.update(status='').where(User.id == user.id).execute()
