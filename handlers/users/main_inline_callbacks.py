@@ -5,13 +5,6 @@ from loader import dp
 from utils.help_functions import check_valid_tuser
 
 
-@dp.callback_query_handler(Text(equals='main_check_equipment'))
-async def main_check_equipment(call: CallbackQuery):
-    await call.answer(cache_time=1)
-    if await check_valid_tuser(message=call.message, group_name='Zavhoz'):
-        pass
-
-
 @dp.callback_query_handler(Text(equals='main_inventarization'))
 async def main_inventarization(call: CallbackQuery):
     await call.answer(cache_time=1)
