@@ -19,10 +19,11 @@ def initialize_db():
     Group.get_or_create(group_name='Inventarization')
     Group.get_or_create(group_name='PhonesAdmin')
     root, created = User.get_or_create(telegram_id=ADMIN_ID,
-                                       first_name='Dzen',
-                                       last_name='Bots',
-                                       username='DzenBots',
-                                       status='')
+                                       defaults={
+                                           'first_name': 'Dzen',
+                                           'last_name': 'Bots',
+                                           'username': 'DzenBots',
+                                           'status': ''})
     Links.get_or_create(user=root,
                         group=admin_group)
     Links.get_or_create(user=root,

@@ -4,7 +4,7 @@ from loguru import logger
 from data.config import admins
 from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
-from utils.db_api import User, Links, Group
+from utils.db_api import User, Links, Group, Equipment, Movement
 
 
 # Получить информацию о пользователе, подключавшимся когда-либо к боту
@@ -85,3 +85,24 @@ async def check_valid_tuser(message: Message, group_name='Admins'):
         await message.answer(text='У Вас нет доступа к этой функции!')
         return False
     return True
+
+
+def get_equipment_info(equipment: Equipment):
+    ret_str = 'Информация об оборудовании\n'
+    ret_str += f'ID: {equipment.it_id}\n'
+    ret_str += f'Инвентарный номер: {equipment.invent_num}\n'
+    ret_str += f'Тип: {equipment.type}\n'
+    ret_str += f'Марка: {equipment.mark}\n'
+    ret_str += f'Модель: {equipment.model}\n'
+    ret_str += f'Серийный номер: {equipment.serial_num}\n\n'
+    try:
+        movements = Movement.select().where(Movement.equipment == equipment)
+        movement = None
+        for item in movements:
+            movement = item
+        ret_str += f'Корпус: {movement.campus}\n'
+        ret_str += f'Кабинет: {movement.room}\n'
+    except:
+        ret_str += 'Корпус: N/A\n'
+        ret_str += 'Кабинет: N/A\n'
+    return ret_str

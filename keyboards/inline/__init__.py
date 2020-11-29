@@ -4,3 +4,4 @@ from .tuser_keyboard import get_add_tuser_keyboard, get_tuser_keyboard, get_grou
 from .main_inline_keyboard import get_main_inline_keyboard
 from .inventrization_keyboards import main_inventarization_keyboard, main_inventarization_callback
 from .phones_searcher_keyboards import main_phone_searcher_keyboard, phone_searcher_callback
+from .equipment_keyboards import get_equipment_reply_markup, edit_equipment_callback, move_equipment_callback, parameter_to_edit_equipment_keyboard
