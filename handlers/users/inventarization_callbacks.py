@@ -6,6 +6,7 @@ from utils import check_valid_tuser
 from utils.db_api import User
 
 
+# Обработка нажатия кнопки "Инвентарный номер" в блоке "Посик оборудования"
 @dp.callback_query_handler(main_inventarization_callback.filter(parameter='invent_num'))
 def ask_for_invent_number(call: CallbackQuery):
     if await check_valid_tuser(message=call.message, group_name='Inventarization') or \
@@ -15,6 +16,7 @@ def ask_for_invent_number(call: CallbackQuery):
         await call.message.edit_text(text='Введите искомый инвентарный номер')
 
 
+# Обработка нажатия кнопки "Серийный номер" в блоке "Посик оборудования"
 @dp.callback_query_handler(main_inventarization_callback.filter(parameter='serial_num'))
 def ask_for_invent_number(call: CallbackQuery):
     if await check_valid_tuser(message=call.message, group_name='Inventarization') or \

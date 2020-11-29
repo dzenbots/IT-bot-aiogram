@@ -2,11 +2,12 @@ from aiogram.types import Message
 from loguru import logger
 
 from data.config import admins
-from keyboards.inline import get_add_tuser_keyboard, group_function_keyboard
+from keyboards.inline import get_add_tuser_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group
 
 
+# Получить информацию о пользователе, подключавшимся когда-либо к боту
 def get_tuser_info(user: User):
     groups_list = ""
     for group in Group.select(Group).join(Links).join(User).where(User.id == user.id):
@@ -20,6 +21,7 @@ Groups: {groups_list}
 """
 
 
+# Получить информацию по команде /help для пользователя
 def get_help_message(user: User):
     text = ''
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Admins'):
@@ -35,16 +37,20 @@ def get_help_message(user: User):
     return text
 
 
+# Проверить чат, написал боту аккаунт человека или сообщение полученно из группы/канала
 def is_private(chat):
     if chat.type == 'private':
         return True
     return False
 
 
+# Проверить валидность пользователя. Находится ли он в группе, которой доступен требуемый функционал
 async def is_valid_user(telegram_chat, group_name='Users'):
     try:
         user = User.get(telegram_id=str(telegram_chat.id))
     except Exception:
+        # Если пользователь новый, то администраторам будет отправлено сообщение о новом подключении,
+        # а пользователь останется ожидать авторизации от администратора
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
                                            first_name=telegram_chat.first_name,
@@ -61,6 +67,7 @@ async def is_valid_user(telegram_chat, group_name='Users'):
                                       reply_markup=get_add_tuser_keyboard(user=user))
         return False
     if user not in User.select(User).join(Links).join(Group).where(Group.group_name == group_name):
+        # Если пользователь не находится в группе, указанной в аргументах
         logger.info(
             f'User id: {user.telegram_id} name: {user.first_name} {user.last_name} try to use unallowed function!')
         return False
@@ -70,8 +77,7 @@ async def is_valid_user(telegram_chat, group_name='Users'):
 async def check_valid_tuser(message: Message, group_name='Admins'):
     if not is_private(message.chat):
         return False
-    telegram_chat = message.chat
-    if not await is_valid_user(telegram_chat=telegram_chat, group_name=group_name):
+    if not await is_valid_user(telegram_chat=message.chat, group_name=group_name):
         await message.answer(text='У Вас нет доступа к этой функции!')
         return False
     return True

@@ -8,6 +8,7 @@ from utils.db_api import User, Group
 from keyboards.inline import get_main_inline_keyboard, group_function_keyboard
 
 
+# Добавляет пользователя бота в группу
 async def user_add_new_group(message: Message, group_name: str):
     if await check_valid_tuser(message=message, group_name='Admins'):
         user = User.get(telegram_id=message.chat.id)
@@ -37,6 +38,7 @@ async def make_serial_num_search(message: Message):
         pass
 
 
+# Показывает пользователю список доступных ему фукнций в зависимости от групп, в которых пользователь состоит
 @dp.message_handler(Text(equals=['На главную']))
 async def show_main_menu(message: Message):
     if await check_valid_tuser(message=message, group_name='Users'):
@@ -45,6 +47,7 @@ async def show_main_menu(message: Message):
         await message.answer(text='Список доступных Вам функций:', reply_markup=get_main_inline_keyboard(user=user))
 
 
+# Хендлер всех текстовых сообщений, распределение функций зависит от статуса пользователя
 @dp.message_handler(content_types=['text'])
 async def reply_row_text(message: Message):
     if await check_valid_tuser(message=message, group_name='Users'):

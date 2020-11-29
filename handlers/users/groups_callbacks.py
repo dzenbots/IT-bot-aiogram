@@ -8,6 +8,7 @@ from loader import dp
 from utils.db_api import Group, User, Links
 
 
+# Обработка нажатия кнопки "Список групп"
 @dp.callback_query_handler(Text(equals='group_list'))
 async def show_all_groups(call: CallbackQuery):
     await call.answer(cache_time=1)
@@ -19,6 +20,7 @@ async def show_all_groups(call: CallbackQuery):
         await call.message.edit_text(text='Список существующих групп:\n\n' + ret_list)
 
 
+# Обработка нажатия на кнопку "Добавить группу"
 @dp.callback_query_handler(Text(equals='add_group'))
 async def add_new_groups(call: CallbackQuery):
     await call.answer(cache_time=1)
@@ -28,6 +30,7 @@ async def add_new_groups(call: CallbackQuery):
         await call.message.edit_text(text='Введите имя новой группы')
 
 
+# Обработка нажатия на кнопку "Удалить группу"
 @dp.callback_query_handler(Text(equals='rm_group'))
 async def add_new_groups(call: CallbackQuery):
     await call.answer(cache_time=1)
@@ -37,6 +40,7 @@ async def add_new_groups(call: CallbackQuery):
         await call.message.edit_text(text='Выберите группу для удаления', reply_markup=group_list_to_chose_rm())
 
 
+# Удаление выбранной группы по нажатию на кнопку с ее названием
 @dp.callback_query_handler(group_callback_datas.filter())
 async def remove_group(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
