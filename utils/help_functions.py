@@ -27,7 +27,7 @@ def get_help_message(user: User):
     if user in User.select(User).join(Links).join(Group).where(Group.group_name == 'Admins'):
         text += '/all_users - Информация о подключавшихся пользователях\n\n'
         text += '/groups - действия с группами пользователей\n\n'
-        text += '/google_update - подгрузить новое оборудование из таблицы Инвентаризация\n\n'
+        text += '/equipments_update - подгрузить новое оборудование из таблицы Инвентаризация\n\n'
         text += '/phones_update - подгрузить новых сотрудников в телефонный справочник'
 
     if text == '':
