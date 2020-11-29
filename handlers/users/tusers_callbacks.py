@@ -10,6 +10,7 @@ from loader import dp
 from utils.db_api import Links, User, Group
 
 
+# Обработка нажатия на кнопку "Добавить в группу" у пользователя
 @dp.callback_query_handler(tuser_callback_datas.filter(func='add_Tuser'))
 async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
@@ -20,6 +21,7 @@ async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
                                      reply_markup=get_groups_list_to_add_keyboard(user=user))
 
 
+# Обработка нажатия на кнопку "Удалить из группы" у пользователя
 @dp.callback_query_handler(tuser_callback_datas.filter(func='rm_Tuser'))
 async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
@@ -30,6 +32,7 @@ async def choose_group_to_add_user_to(call: CallbackQuery, callback_data: dict):
                                      reply_markup=get_groups_list_to_rm_keyboard(user=user))
 
 
+# Добавление пользователя в группу по нажатию на кнопку с названием группы
 @dp.callback_query_handler(add_to_group_datas.filter())
 async def add_tuser_to_group(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
@@ -52,6 +55,7 @@ async def add_tuser_to_group(call: CallbackQuery, callback_data: dict):
                                   reply_markup=get_main_inline_keyboard(user=user))
 
 
+# Удаление пользователя из группы по нажатию на кнопку с названием группы
 @dp.callback_query_handler(rm_from_group_datas.filter())
 async def rm_user_from_group(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
