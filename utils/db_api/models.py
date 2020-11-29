@@ -25,3 +25,19 @@ class User(BaseModel):
 class Links(BaseModel):
     user = ForeignKeyField(User, backref='links')
     group = ForeignKeyField(Group, backref='links')
+
+
+class Equipment(BaseModel):
+    it_id = CharField(unique=True)
+    pos_in_buh = CharField()
+    invent_num = CharField()
+    type = CharField()
+    mark = CharField()
+    model = CharField()
+    serial_num = CharField()
+
+
+class Movement(BaseModel):
+    equipment = ForeignKeyField(Equipment, backref="movements")
+    campus = CharField()
+    room = CharField()

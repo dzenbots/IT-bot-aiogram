@@ -1,3 +1,4 @@
+from .equipments_update import dp
 from .groups import dp
 from .groups_callbacks import dp
 from .help import dp
