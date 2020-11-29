@@ -1,6 +1,7 @@
 from .groups import dp
 from .groups_callbacks import dp
 from .help import dp
+from .inventarization_callbacks import dp
 from .main_inline_callbacks import dp
 from .row_text_messages import dp
 from .start import dp
