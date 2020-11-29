@@ -1,11 +1,40 @@
 from aiogram.dispatcher.filters import Text
 from aiogram.types import Message
+from loguru import logger
 
 from handlers.users import check_valid_tuser
 from loader import dp
-from utils.db_api import User
-from keyboards.inline import get_main_inline_keyboard
-from utils.help_functions import user_add_new_group, make_serial_num_search, make_invent_num_search
+from utils.db_api import User, Group
+from keyboards.inline import get_main_inline_keyboard, group_function_keyboard
+
+
+async def user_add_new_group(message: Message, group_name: str):
+    if await check_valid_tuser(message=message, group_name='Admins'):
+        user = User.get(telegram_id=message.chat.id)
+        new_group, created = Group.get_or_create(group_name=group_name)
+        User.update(status='').where(User.id == user.id).execute()
+        if not created:
+            logger.info(f'User {user.id} tried to add an existing group {new_group.group_name} one more time')
+            await message.answer(text='Группа с таким именем уже существует')
+            await message.answer(text='Выбите действие',
+                                 reply_markup=group_function_keyboard)
+        else:
+            logger.info(f'User {user.id} added new group {new_group.group_name}')
+            await message.answer(text='Группа создана')
+            await message.answer(text='Выбите действие',
+                                 reply_markup=group_function_keyboard)
+
+
+async def make_invent_num_search(message: Message):
+    if await check_valid_tuser(message=message, group_name='Inventarization') or \
+            await check_valid_tuser(message=message, group_name='Zavhoz'):
+        pass
+
+
+async def make_serial_num_search(message: Message):
+    if await check_valid_tuser(message=message, group_name='Inventarization') or \
+            await check_valid_tuser(message=message, group_name='Zavhoz'):
+        pass
 
 
 @dp.message_handler(Text(equals=['На главную']))
