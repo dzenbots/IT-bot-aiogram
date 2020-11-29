@@ -2,10 +2,10 @@ from aiogram.dispatcher.filters import Text
 from aiogram.types import Message
 from loguru import logger
 
-from handlers.users import check_valid_tuser
-from loader import dp
-from utils.db_api import User, Group
 from keyboards.inline import get_main_inline_keyboard, group_function_keyboard
+from loader import dp
+from utils import check_valid_tuser
+from utils.db_api import User, Group
 
 
 # Добавляет пользователя бота в группу

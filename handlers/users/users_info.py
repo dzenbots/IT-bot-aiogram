@@ -1,10 +1,10 @@
-from aiogram.types import Message
 from aiogram.dispatcher.filters import Command
+from aiogram.types import Message
 
-from utils.help_functions import check_valid_tuser, get_tuser_info
 from keyboards.inline import get_tuser_keyboard
 from loader import dp
 from utils.db_api import User
+from utils.help_functions import check_valid_tuser, get_tuser_info
 from utils.misc import rate_limit
 
 

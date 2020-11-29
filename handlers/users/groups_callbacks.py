@@ -2,10 +2,10 @@ from aiogram.dispatcher.filters import Text
 from aiogram.types import CallbackQuery
 from loguru import logger
 
-from keyboards.inline.groups_list_keyboard import group_list_to_chose_rm, group_callback_datas, group_function_keyboard
-from utils.help_functions import check_valid_tuser
+from keyboards.inline import group_callback_datas, group_function_keyboard, group_list_to_chose_rm
 from loader import dp
 from utils.db_api import Group, User, Links
+from utils.help_functions import check_valid_tuser
 
 
 # Обработка нажатия кнопки "Список групп"

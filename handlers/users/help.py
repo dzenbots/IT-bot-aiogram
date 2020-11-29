@@ -1,9 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandHelp
 
-from utils.help_functions import check_valid_tuser, get_help_message
 from loader import dp
 from utils.db_api import User
+from utils.help_functions import check_valid_tuser, get_help_message
 from utils.misc import rate_limit
 
 

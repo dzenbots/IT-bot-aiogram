@@ -2,7 +2,7 @@ from aiogram.types import Message
 from loguru import logger
 
 from data.config import admins
-from keyboards.inline import get_add_tuser_keyboard
+from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group
 
