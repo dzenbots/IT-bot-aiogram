@@ -7,7 +7,7 @@ from utils import check_valid_tuser
 from utils.db_api import User, Equipment
 
 
-# Обработка нажатия кнопки "Инвентарный номер" в блоке "Посик оборудования"
+# Обработка нажатия кнопки "Инвентарный номер" в блоке "Поиск оборудования"
 @dp.callback_query_handler(main_inventarization_callback.filter(parameter='invent_num'))
 async def ask_for_invent_number(call: CallbackQuery):
     if await check_valid_tuser(message=call.message, group_name='Inventarization') or \
@@ -17,7 +17,7 @@ async def ask_for_invent_number(call: CallbackQuery):
         await call.message.edit_text(text='Введите искомый инвентарный номер')
 
 
-# Обработка нажатия кнопки "Серийный номер" в блоке "Посик оборудования"
+# Обработка нажатия кнопки "Серийный номер" в блоке "Поиск оборудования"
 @dp.callback_query_handler(main_inventarization_callback.filter(parameter='serial_num'))
 async def ask_for_serial_number(call: CallbackQuery):
     if await check_valid_tuser(message=call.message, group_name='Inventarization') or \
@@ -27,6 +27,7 @@ async def ask_for_serial_number(call: CallbackQuery):
         await call.message.edit_text(text='Введите серийный инвентарный номер')
 
 
+# Обработка нажатия кнопки "Изменить данные" у оборудования
 @dp.callback_query_handler(edit_equipment_callback.filter(parameter='_'))
 async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
     if await check_valid_tuser(message=call.message, group_name='Inventarization'):
@@ -36,6 +37,7 @@ async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
                                     reply_markup=parameter_to_edit_equipment_keyboard(equipment=equipment))
 
 
+# Обработка нажатия кнопки "Тип" в блоке "Изменить оборудования"
 @dp.callback_query_handler(edit_equipment_callback.filter(parameter='type'))
 async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
     if await check_valid_tuser(message=call.message, group_name='Inventarization'):
@@ -45,6 +47,7 @@ async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
         await call.message.edit_text(text='Введите новое название типа оборудования')
 
 
+# Обработка нажатия кнопки "Марка" в блоке "Изменить оборудования"
 @dp.callback_query_handler(edit_equipment_callback.filter(parameter='mark'))
 async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
     if await check_valid_tuser(message=call.message, group_name='Inventarization'):
@@ -54,6 +57,7 @@ async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
         await call.message.edit_text(text='Введите новое название марки оборудования')
 
 
+# Обработка нажатия кнопки "Модель" в блоке "Изменить оборудования"
 @dp.callback_query_handler(edit_equipment_callback.filter(parameter='model'))
 async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
     if await check_valid_tuser(message=call.message, group_name='Inventarization'):
@@ -63,6 +67,7 @@ async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
         await call.message.edit_text(text='Введите новое название модели оборудование')
 
 
+# Обработка нажатия кнопки "Серийный номер" в блоке "Изменить оборудования"
 @dp.callback_query_handler(edit_equipment_callback.filter(parameter='serial_num'))
 async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
     if await check_valid_tuser(message=call.message, group_name='Inventarization'):
