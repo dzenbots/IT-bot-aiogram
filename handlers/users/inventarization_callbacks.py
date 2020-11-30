@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery
 
 from keyboards.inline import main_inventarization_callback, edit_equipment_callback, \
-    parameter_to_edit_equipment_keyboard
+    parameter_to_edit_equipment_keyboard, move_equipment_callback, get_movement_keyboard
 from loader import dp
 from utils import check_valid_tuser
 from utils.db_api import User, Equipment
@@ -75,4 +75,34 @@ async def choose_parameter_to_edit(call: CallbackQuery, callback_data: dict):
         user = User.get(telegram_id=call.message.chat.id)
         User.update(status=f'edit_serial:{equipment.id}').where(User.id == user.id).execute()
         await call.message.edit_text(text='Введите корректный серийный номер оборудования')
+
+
+# Обработка нажатия кнопки "Переместить" у оборудования
+@dp.callback_query_handler(move_equipment_callback.filter(campus='_'))
+async def show_campus_list(call: CallbackQuery, callback_data: dict):
+    if await check_valid_tuser(message=call.message, group_name='Inventarization'):
+        equipment = Equipment.get(id=int(callback_data.get('equipment_id')))
+        await call.message.edit_text(text='Выберите корпус, куда следует переместить оборудование',
+                                     reply_markup=get_movement_keyboard(equipment=equipment))
+
+
+# Обработка нажатия кнопки "Списание" в блоке "Перемещение"
+@dp.callback_query_handler(move_equipment_callback.filter(campus='spisanie'))
+async def make_spisanie_list(call: CallbackQuery, callback_data: dict):
+    if await check_valid_tuser(message=call.message, group_name='Inventarization'):
+        equipment = Equipment.get(id=int(callback_data.get('equipment_id')))
+        user = User.get(telegram_id=call.message.chat.id)
+        User.update(status=f'spisanie:{equipment.id}').where(User.id == user.id).execute()
+        await call.message.edit_text(text='Укажите, где сейчас находится оборудование и комментарий, если необходимо')
+
+
+# Обработка нажатия кнопки "Списание" в блоке "Перемещение"
+@dp.callback_query_handler(move_equipment_callback.filter())
+async def make_spisanie_list(call: CallbackQuery, callback_data: dict):
+    if await check_valid_tuser(message=call.message, group_name='Inventarization'):
+        campus = callback_data.get('campus')
+        equipment = Equipment.get(id=int(callback_data.get('equipment_id')))
+        user = User.get(telegram_id=call.message.chat.id)
+        User.update(status=f'move_equipment:{equipment.id}/campus:{campus}').where(User.id == user.id).execute()
+        await call.message.edit_text(text='Укажите кабинет, где сейчас находится оборудование')
 

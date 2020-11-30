@@ -7,7 +7,7 @@ from keyboards.inline import get_main_inline_keyboard, group_function_keyboard, 
 from loader import dp
 from utils import check_valid_tuser, get_equipment_info
 from utils.GoogleSheetsAPI import GoogleSync
-from utils.db_api import User, Group, Equipment
+from utils.db_api import User, Group, Equipment, Movement
 
 
 # Добавляет пользователя бота в группу
@@ -43,6 +43,7 @@ async def make_invent_num_search(message: Message):
                 await message.answer(text=get_equipment_info(equipment=item),
                                      reply_markup=get_equipment_reply_markup(equipment=item) if await check_valid_tuser(
                                          message=message, group_name='Inventarization') else None)
+
 
 # Поиск оборудования по серийному номеру
 async def make_serial_num_search(message: Message):
@@ -130,6 +131,40 @@ async def show_main_menu(message: Message):
         await message.answer(text='Список доступных Вам функций:', reply_markup=get_main_inline_keyboard(user=user))
 
 
+def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
+    GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Перемещение оборудования',
+                                                                                  range_in_list=f'A{movement.id + 1}:C{movement.id + 1}',
+                                                                                  data=[
+                                                                                      [
+                                                                                          str(equipment.it_id),
+                                                                                          str(movement.campus),
+                                                                                          str(movement.room)
+                                                                                      ]
+                                                                                  ])
+
+
+async def make_spisanie(message: Message, equipment_id: str):
+    equipment = Equipment.get(id=int(equipment_id))
+    movement = Movement.create(equipment=equipment,
+                               campus='Списание',
+                               room=message.text)
+    send_movement_to_google_sheet(equipment=equipment, movement=movement)
+    await message.answer(text=get_equipment_info(equipment),
+                         reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
+                             message=message, group_name='Inventarization') else None)
+
+
+async def make_movement(message: Message, equipment_id: str, campus: str):
+    equipment = Equipment.get(id=int(equipment_id))
+    movement = Movement.create(equipment=equipment,
+                               campus=campus,
+                               room=message.text)
+    send_movement_to_google_sheet(equipment=equipment, movement=movement)
+    await message.answer(text=get_equipment_info(equipment),
+                         reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
+                             message=message, group_name='Inventarization') else None)
+
+
 # Хендлер всех текстовых сообщений, распределение функций зависит от статуса пользователя
 @dp.message_handler(content_types=['text'])
 async def reply_row_text(message: Message):
@@ -157,6 +192,13 @@ async def reply_row_text(message: Message):
             elif user.status.split(':')[0] == 'edit_serial':
                 equipment_id = user.status.split(':')[1]
                 await edit_equipment_serial(message=message, equipment_id=equipment_id)
+            elif user.status.split(':')[0] == 'spisanie':
+                equipment_id = user.status.split(':')[1]
+                await make_spisanie(message=message, equipment_id=equipment_id)
+            elif user.status.split(':')[0] == 'move_equipment':
+                equipment_id = user.status.split('/')[0].split(':')[1]
+                campus = user.status.split(':')[2]
+                await make_movement(message=message, equipment_id=equipment_id, campus=campus)
             User.update(status='').where(User.id == user.id).execute()
     else:
         await message.answer(text='Дождитесь пока администратор авторизует Вас!')

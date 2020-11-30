@@ -82,61 +82,61 @@ def get_movement_keyboard(equipment: Equipment):
             [
                 InlineKeyboardButton(text='УК 1', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='1'
+                    campus='УК 1'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 2', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='2'
+                    campus='УК 2'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 3', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='3'
+                    campus='УК 3'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 4', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='4'
+                    campus='УК 4'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 5', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='5'
+                    campus='УК 5'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 6', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='6'
+                    campus='УК 6'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 7', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='7'
+                    campus='УК 7'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 8', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='8'
+                    campus='УК 8'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 9', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='9'
+                    campus='УК 9'
                 ))
             ],
             [
                 InlineKeyboardButton(text='УК 10', callback_data=move_equipment_callback.new(
                     equipment_id=equipment.id,
-                    campus='10'
+                    campus='УК 10'
                 ))
             ],
             [
