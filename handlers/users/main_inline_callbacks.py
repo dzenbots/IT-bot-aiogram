@@ -23,5 +23,4 @@ async def main_inventarization(call: CallbackQuery):
 async def main_phone_searcher(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='Users'):
-        user = User.get(telegram_id=call.message.chat.id)
         await call.message.edit_text(text='Выберите параметр поиска', reply_markup=main_phone_searcher_keyboard)
