@@ -10,7 +10,7 @@ from utils.misc import rate_limit
 
 @rate_limit(5, 'equipments_update')
 @dp.message_handler(Command('equipments_update'))
-async def bot_help(message: Message):
+async def equipments_update(message: Message):
     if await check_valid_tuser(message=message, group_name='Inventarization') or \
             await check_valid_tuser(message=message, group_name='Inventarization'):
         cur_equipments = Equipment.select()

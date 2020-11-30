@@ -41,3 +41,14 @@ class Movement(BaseModel):
     equipment = ForeignKeyField(Equipment, backref="movements")
     campus = CharField()
     room = CharField()
+
+
+class Person(BaseModel):
+    name = CharField()
+    surname = CharField()
+    patronymic = CharField()
+    position = CharField()
+    photo = CharField()
+    phone = CharField()
+    email = CharField()
+    actual = CharField()
