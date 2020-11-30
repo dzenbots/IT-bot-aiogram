@@ -27,6 +27,7 @@ async def user_add_new_group(message: Message, group_name: str):
                                  reply_markup=group_function_keyboard)
 
 
+# Поиск оборудования по инвентарному номеру
 async def make_invent_num_search(message: Message):
     if await check_valid_tuser(message=message, group_name='Inventarization') or \
             await check_valid_tuser(message=message, group_name='Zavhoz'):
@@ -43,7 +44,7 @@ async def make_invent_num_search(message: Message):
                                      reply_markup=get_equipment_reply_markup(equipment=item) if await check_valid_tuser(
                                          message=message, group_name='Inventarization') else None)
 
-
+# Поиск оборудования по серийному номеру
 async def make_serial_num_search(message: Message):
     if await check_valid_tuser(message=message, group_name='Inventarization') or \
             await check_valid_tuser(message=message, group_name='Zavhoz'):
@@ -61,6 +62,7 @@ async def make_serial_num_search(message: Message):
                                          message=message, group_name='Inventarization') else None)
 
 
+# Отправка иинформации об оборудовании в Google-таблицу
 def send_equipment_info_to_google_sheet(equipment: Equipment):
     GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Список оборудования',
                                                                                   range_in_list=f'A{equipment.id + 1}:G{equipment.id + 1}',
@@ -75,6 +77,7 @@ def send_equipment_info_to_google_sheet(equipment: Equipment):
                                                                                   ]])
 
 
+# Изменение типа в оборудовании
 async def edit_equipment_type(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(type=message.text).where(Equipment.id == int(equipment_id)).execute()
@@ -85,6 +88,7 @@ async def edit_equipment_type(message: Message, equipment_id: str):
                                  message=message, group_name='Inventarization') else None)
 
 
+# Изменение марки в оборудовании
 async def edit_equipment_mark(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(mark=message.text).where(Equipment.id == int(equipment_id)).execute()
@@ -95,6 +99,7 @@ async def edit_equipment_mark(message: Message, equipment_id: str):
                                  message=message, group_name='Inventarization') else None)
 
 
+# Изменение модели в оборудовании
 async def edit_equipment_model(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(model=message.text).where(Equipment.id == int(equipment_id)).execute()
@@ -105,6 +110,7 @@ async def edit_equipment_model(message: Message, equipment_id: str):
                                  message=message, group_name='Inventarization') else None)
 
 
+# Изменение серийного номера в оборудовании
 async def edit_equipment_serial(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(serial_num=message.text).where(Equipment.id == int(equipment_id)).execute()
