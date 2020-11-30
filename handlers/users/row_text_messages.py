@@ -11,17 +11,17 @@ from utils.db_api import User, Group, Equipment, Movement
 
 
 # Добавляет пользователя бота в группу
-async def user_add_new_group(message: Message, group_name: str):
+async def adding_new_group(message: Message, group_name: str):
     if await check_valid_tuser(message=message, group_name='Admins'):
         user = User.get(telegram_id=message.chat.id)
         new_group, created = Group.get_or_create(group_name=group_name)
         if not created:
-            logger.info(f'User {user.id} tried to add an existing group {new_group.group_name} one more time')
+            logger.info(f'User {user.telegram_id} tried to add an existing group {new_group.group_name} one more time')
             await message.answer(text='Группа с таким именем уже существует')
             await message.answer(text='Выбите действие',
                                  reply_markup=group_function_keyboard)
         else:
-            logger.info(f'User {user.id} added new group {new_group.group_name}')
+            logger.info(f'User {user.telegram_id} added new group {new_group.group_name}')
             await message.answer(text='Группа создана')
             await message.answer(text='Выбите действие',
                                  reply_markup=group_function_keyboard)
@@ -37,7 +37,7 @@ async def make_invent_num_search(message: Message):
         if found_equipments.count() < 1:
             await message.answer(text=f'Оборудование с инвентарным номером {looking_invent_num} не стоит на балансе')
             logger.info(
-                f'User {user.id} looking for unexisting equipment with {looking_invent_num} invent number')
+                f'User {user.telegram_id} looking for unexisting equipment with {looking_invent_num} invent number')
         else:
             for item in found_equipments:
                 await message.answer(text=get_equipment_info(equipment=item),
@@ -55,7 +55,7 @@ async def make_serial_num_search(message: Message):
         if found_equipments.count() < 1:
             await message.answer(text=f'Оборудование с серийным номером {looking_serial_num} не стоит на балансе')
             logger.info(
-                f'User {user.id} looking for unexisting equipment with {looking_serial_num} invent number')
+                f'User {user.telegram_id} looking for unexisting equipment with {looking_serial_num} invent number')
         else:
             for item in found_equipments:
                 await message.answer(text=get_equipment_info(equipment=item),
@@ -83,7 +83,9 @@ async def edit_equipment_type(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(type=message.text).where(Equipment.id == int(equipment_id)).execute()
         equipment = Equipment.get(id=int(equipment_id))
+        user = User.get(telegram_id=message.chat.id)
         send_equipment_info_to_google_sheet(equipment)
+        logger.info(f'User {user.telegram_id} changed type of equipment {equipment.it_id}')
         await message.answer(text=get_equipment_info(equipment),
                              reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                                  message=message, group_name='Inventarization') else None)
@@ -94,7 +96,9 @@ async def edit_equipment_mark(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(mark=message.text).where(Equipment.id == int(equipment_id)).execute()
         equipment = Equipment.get(id=int(equipment_id))
+        user = User.get(telegram_id=message.chat.id)
         send_equipment_info_to_google_sheet(equipment)
+        logger.info(f'User {user.telegram_id} changed mark of equipment {equipment.it_id}')
         await message.answer(text=get_equipment_info(equipment),
                              reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                                  message=message, group_name='Inventarization') else None)
@@ -105,7 +109,9 @@ async def edit_equipment_model(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(model=message.text).where(Equipment.id == int(equipment_id)).execute()
         equipment = Equipment.get(id=int(equipment_id))
+        user = User.get(telegram_id=message.chat.id)
         send_equipment_info_to_google_sheet(equipment)
+        logger.info(f'User {user.telegram_id} changed model of equipment {equipment.it_id}')
         await message.answer(text=get_equipment_info(equipment),
                              reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                                  message=message, group_name='Inventarization') else None)
@@ -116,7 +122,9 @@ async def edit_equipment_serial(message: Message, equipment_id: str):
     if await check_valid_tuser(message=message, group_name='Inventarization'):
         Equipment.update(serial_num=message.text).where(Equipment.id == int(equipment_id)).execute()
         equipment = Equipment.get(id=int(equipment_id))
+        user = User.get(telegram_id=message.chat.id)
         send_equipment_info_to_google_sheet(equipment)
+        logger.info(f'User {user.telegram_id} changed serial number of equipment {equipment.it_id}')
         await message.answer(text=get_equipment_info(equipment),
                              reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                                  message=message, group_name='Inventarization') else None)
@@ -143,6 +151,7 @@ def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
                                                                                   ])
 
 
+# Создание нового списания
 async def make_spisanie(message: Message, equipment_id: str):
     equipment = Equipment.get(id=int(equipment_id))
     movement = Movement.create(equipment=equipment,
@@ -154,6 +163,7 @@ async def make_spisanie(message: Message, equipment_id: str):
                              message=message, group_name='Inventarization') else None)
 
 
+# Создание нового перемещения
 async def make_movement(message: Message, equipment_id: str, campus: str):
     equipment = Equipment.get(id=int(equipment_id))
     movement = Movement.create(equipment=equipment,
@@ -175,7 +185,7 @@ async def reply_row_text(message: Message):
                 text='Воспользуйтесь кнопками для доступа к функциям или используйте вспомогательные команды (/help)')
         else:
             if user.status == 'adding new group':
-                await user_add_new_group(message=message, group_name=message.text)
+                await adding_new_group(message=message, group_name=message.text)
             elif user.status == 'invent_search':
                 await make_invent_num_search(message=message)
             elif user.status == 'serial_search':

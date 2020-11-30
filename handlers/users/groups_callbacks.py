@@ -51,6 +51,6 @@ async def remove_group(call: CallbackQuery, callback_data: dict):
         for link in Links.select(Links).join(Group).where(Group.id == group.id):
             link.delete_instance()
         group.delete_instance()
-        logger.info(f'User {user.id} removed group {group.group_name}')
+        logger.info(f'User {user.telegram_id} removed group {group.group_name}')
         await call.message.edit_text(text='Выбите действие',
                                      reply_markup=group_function_keyboard)
