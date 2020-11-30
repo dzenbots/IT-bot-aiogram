@@ -158,6 +158,8 @@ async def make_spisanie(message: Message, equipment_id: str):
                                campus='Списание',
                                room=message.text)
     send_movement_to_google_sheet(equipment=equipment, movement=movement)
+    user = User.get(telegram_id=message.chat.id)
+    logger.info(f'User {user.telegram_id} move equipment {equipment.it_id} to spisanie')
     await message.answer(text=get_equipment_info(equipment),
                          reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                              message=message, group_name='Inventarization') else None)
@@ -170,6 +172,8 @@ async def make_movement(message: Message, equipment_id: str, campus: str):
                                campus=campus,
                                room=message.text)
     send_movement_to_google_sheet(equipment=equipment, movement=movement)
+    user = User.get(telegram_id=message.chat.id)
+    logger.info(f'User {user.telegram_id} move equipment {equipment.it_id} to campus {campus} room message.text')
     await message.answer(text=get_equipment_info(equipment),
                          reply_markup=get_equipment_reply_markup(equipment) if await check_valid_tuser(
                              message=message, group_name='Inventarization') else None)
