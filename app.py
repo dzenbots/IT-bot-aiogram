@@ -11,7 +11,8 @@ async def on_startup(dp):
 if __name__ == '__main__':
     from aiogram import executor
     from handlers import dp
-    from utils.db_api import initialize_db
+    from utils.db_api import initialize_db, Person
 
     initialize_db()
+    # Person.drop_table()
     executor.start_polling(dp, on_startup=on_startup, skip_updates=True)

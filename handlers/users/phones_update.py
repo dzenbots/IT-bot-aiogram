@@ -20,18 +20,18 @@ async def phones_update(message: Message):
 
         if persons_from_google is not None:
             for person in persons_from_google:
-                if len(person) < 7:
-                    for j in range(len(person), 7):
+                if len(person) < 8:
+                    for j in range(len(person), 8):
                         person.append('')
                 Person.get_or_create(
-                    phone=f'+{person[4].strip()}',
+                    phone=f'+{person[5].strip()}',
                     defaults={
                         'name': person[1].strip(),
                         'surname': person[0].strip(),
                         'patronymic': person[2].strip(),
                         'position': person[3].strip(),
-                        'email': person[5].strip(),
-                        'photo': '',
-                        'actual': person[6].strip()
+                        'email': person[6].strip(),
+                        'photo': person[4].strip(),
+                        'actual': person[7].strip()
                     })
         await message.answer(text='Данные получены')

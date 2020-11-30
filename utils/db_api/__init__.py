@@ -1,5 +1,5 @@
 from data.config import ADMIN_ID
-from .models import Group, User, Links, db, Equipment, Movement
+from .models import Group, User, Links, db, Equipment, Movement, Person
 
 
 def initialize_db():
@@ -9,7 +9,8 @@ def initialize_db():
         User,
         Links,
         Equipment,
-        Movement
+        Movement,
+        Person
     ], safe=True)
     admin_group, created = Group.get_or_create(group_name='Admins')
     user_group, created = Group.get_or_create(group_name='Users')

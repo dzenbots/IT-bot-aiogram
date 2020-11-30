@@ -1,4 +1,5 @@
-from aiogram.types import Message
+from aiogram import Dispatcher
+from aiogram.types import Message, CallbackQuery
 from loguru import logger
 
 from data.config import admins
@@ -8,6 +9,9 @@ from utils.db_api import User, Links, Group, Equipment, Movement
 
 
 # Получить информацию о пользователе, подключавшимся когда-либо к боту
+from utils.db_api.models import Person
+
+
 def get_tuser_info(user: User):
     groups_list = ""
     for group in Group.select(Group).join(Links).join(User).where(User.id == user.id):
@@ -106,3 +110,35 @@ def get_equipment_info(equipment: Equipment):
         ret_str += 'Корпус: N/A\n'
         ret_str += 'Кабинет: N/A\n'
     return ret_str
+
+
+def get_person_info(person: Person):
+    ret_str = f'ФИО: {person.surname} {person.name} {person.patronymic}\n'
+    ret_str += f'Должность: {person.position}\n'
+    if not person.email == '':
+        ret_str += f'E-mail: {person.email}'
+    return ret_str
+
+
+def get_person_vcard(person: Person):
+    vcf ='BEGIN:VCARD\nVERSION:3.0\n'
+    vcf += 'N:' + f'{person.surname};{person.name};{person.patronymic}' + "\n"
+    vcf += 'ORG:' + 'ГБОУ Школа \" Дмитровский\"' + "\n"
+    vcf += 'TEL;CELL:' + person.phone + "\n"
+    if not person.email == '':
+        vcf += 'EMAIL:' + person.email + "\n"
+    vcf += 'END:VCARD' + "\n\n"
+    return vcf
+
+
+async def send_person_info(person: Person, call: CallbackQuery, dp: Dispatcher):
+    if not person.photo == '':
+        await dp.bot.send_photo(chat_id=call.message.chat.id,
+                                photo=person.photo,
+                                caption=get_person_info(person=person))
+    if not person.phone == '':
+        await dp.bot.send_contact(chat_id=call.message.chat.id,
+                                  phone_number=f'+{person.phone}',
+                                  first_name=f'{person.surname} {person.name}',
+                                  last_name=f'{person.patronymic}',
+                                  vcard=get_person_vcard(person=person))
