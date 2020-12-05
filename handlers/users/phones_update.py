@@ -32,6 +32,6 @@ async def phones_update(message: Message):
                         'position': person[3].strip(),
                         'email': person[6].strip(),
                         'photo': person[4].strip(),
-                        'actual': person[7].strip()
+                        'actual': 'True' if person[7].strip() == 'True' or person[7].strip() == '' else 'False'
                     })
         await message.answer(text='Данные получены')

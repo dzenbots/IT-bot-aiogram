@@ -1,13 +1,11 @@
-from aiogram import Dispatcher
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from loguru import logger
 
 from data.config import admins
+from keyboards.inline.phones_searcher_keyboards import get_person_keyboard
 from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group, Equipment, Movement
-
-
 # Получить информацию о пользователе, подключавшимся когда-либо к боту
 from utils.db_api.models import Person
 
@@ -121,7 +119,7 @@ def get_person_info(person: Person):
 
 
 def get_person_vcard(person: Person):
-    vcf ='BEGIN:VCARD\nVERSION:3.0\n'
+    vcf = 'BEGIN:VCARD\nVERSION:3.0\n'
     vcf += 'N:' + f'{person.surname};{person.name};{person.patronymic}' + "\n"
     vcf += 'ORG:' + 'ГБОУ Школа \" Дмитровский\"' + "\n"
     vcf += 'TEL;CELL:' + person.phone + "\n"
@@ -131,13 +129,17 @@ def get_person_vcard(person: Person):
     return vcf
 
 
-async def send_person_info(person: Person, call: CallbackQuery, dp: Dispatcher):
+async def send_person_info(person: Person, message: Message):
     if not person.photo == '':
-        await dp.bot.send_photo(chat_id=call.message.chat.id,
+        await dp.bot.send_photo(chat_id=message.chat.id,
                                 photo=person.photo,
                                 caption=get_person_info(person=person))
+    await dp.bot.send_message(chat_id=message.chat.id,
+                              text=get_person_info(person=person),
+                              reply_markup=get_person_keyboard(person=person) if check_valid_tuser(message=message,
+                                                                                                   group_name='PhonesAdmin') else None)
     if not person.phone == '':
-        await dp.bot.send_contact(chat_id=call.message.chat.id,
+        await dp.bot.send_contact(chat_id=message.chat.id,
                                   phone_number=f'+{person.phone}',
                                   first_name=f'{person.surname} {person.name}',
                                   last_name=f'{person.patronymic}',
