@@ -264,6 +264,7 @@ klass_ruk_seracher_keyboard = InlineKeyboardMarkup(
 )
 
 person_activation_callback = CallbackData('person_visible', 'person_id', 'is_visible')
+# TODO add editing functions
 person_edit_callback = CallbackData('person_edit', 'person_id', 'parameter')
 
 
