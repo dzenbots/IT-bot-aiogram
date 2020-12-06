@@ -1,3 +1,5 @@
+import time
+
 from aiogram.dispatcher.filters import Text
 from aiogram.types import Message
 from loguru import logger
@@ -7,10 +9,11 @@ from keyboards.inline import get_main_inline_keyboard, group_function_keyboard, 
 from loader import dp
 from utils import check_valid_tuser, get_equipment_info
 from utils.GoogleSheetsAPI import GoogleSync
-from utils.db_api import User, Group, Equipment, Movement
-
-
+from utils.db_api import User, Group, Equipment, Movement, Person
 # Добавляет пользователя бота в группу
+from utils.help_functions import send_person_info
+
+
 async def adding_new_group(message: Message, group_name: str):
     if await check_valid_tuser(message=message, group_name='Admins'):
         user = User.get(telegram_id=message.chat.id)
@@ -130,15 +133,6 @@ async def edit_equipment_serial(message: Message, equipment_id: str):
                                  message=message, group_name='Inventarization') else None)
 
 
-# Показывает пользователю список доступных ему фукнций в зависимости от групп, в которых пользователь состоит
-@dp.message_handler(Text(equals=['На главную']))
-async def show_main_menu(message: Message):
-    if await check_valid_tuser(message=message, group_name='Users'):
-        user = User.get(telegram_id=message.chat.id)
-        User.update(status='').where(User.id == user.id).execute()
-        await message.answer(text='Список доступных Вам функций:', reply_markup=get_main_inline_keyboard(user=user))
-
-
 def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
     GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Перемещение оборудования',
                                                                                   range_in_list=f'A{movement.id + 1}:C{movement.id + 1}',
@@ -179,6 +173,58 @@ async def make_movement(message: Message, equipment_id: str, campus: str):
                              message=message, group_name='Inventarization') else None)
 
 
+# Поиск человека в телефонном справочнике по ФИО
+async def phone_search(message: Message, search_parameter: str):
+    if search_parameter == 'phone':
+        found_person = None
+        try:
+            found_person = Person.get(phone=message.text)
+        except:
+            await message.answer(text='Я никого не нашел по указанным параметрам поиска')
+            return
+        await send_person_info(message=message, person=found_person)
+    elif search_parameter == 'fio':
+        found_persons = []
+        search_depth = len(message.text.split(' '))
+        found_person = Person.select().where(Person.surname == message.text.split(' ')[0].title())
+        surname_found_persons = []
+        if found_person.count() > 0:
+            for person in found_person:
+                surname_found_persons.append(person)
+        if search_depth == 1:
+            found_persons = surname_found_persons
+        else:
+            name_found_persons = []
+            for person in surname_found_persons:
+                if person.name == message.text.split(' ')[1].title():
+                    name_found_persons.append(person)
+            if search_depth == 2:
+                found_persons = name_found_persons
+            else:
+                patronymic_found_persons = []
+                search_patronymic = message.text.replace(f"{message.text.split(' ')[0]} {message.text.split(' ')[1]}",
+                                                         '').title()
+                for person in name_found_persons:
+                    if person.patronymic == search_patronymic:
+                        patronymic_found_persons.append(person)
+                found_persons = patronymic_found_persons
+        if not found_persons:
+            await message.answer(text='Я никого не нашел по указанным параметрам поиска')
+        else:
+            for person in found_persons:
+                await send_person_info(message=message, person=person)
+                time.sleep(1)
+
+
+# Показывает пользователю список доступных ему фукнций в зависимости от групп, в которых пользователь состоит
+@dp.message_handler(Text(equals=['На главную']))
+async def show_main_menu(message: Message):
+    if await check_valid_tuser(message=message, group_name='Users'):
+        user = User.get(telegram_id=message.chat.id)
+        User.update(status='').where(User.id == user.id).execute()
+        await message.answer(text='Список доступных Вам функций:', reply_markup=get_main_inline_keyboard(user=user))
+
+
 # Хендлер всех текстовых сообщений, распределение функций зависит от статуса пользователя
 @dp.message_handler(content_types=['text'])
 async def reply_row_text(message: Message):
@@ -213,6 +259,9 @@ async def reply_row_text(message: Message):
                 equipment_id = user.status.split('/')[0].split(':')[1]
                 campus = user.status.split(':')[2]
                 await make_movement(message=message, equipment_id=equipment_id, campus=campus)
+            elif user.status.split(':')[0] == 'phone_search':
+                parameter = user.status.split(':')[1]
+                await phone_search(message=message, search_parameter=parameter)
             User.update(status='').where(User.id == user.id).execute()
     else:
         await message.answer(text='Дождитесь пока администратор авторизует Вас!')

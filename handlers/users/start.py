@@ -6,8 +6,10 @@ from keyboards.inline import get_main_inline_keyboard
 from loader import dp
 from utils.db_api import User
 from utils.help_functions import is_valid_user, is_private
+from utils.misc import rate_limit
 
 
+@rate_limit(5, 'help')
 @dp.message_handler(CommandStart())
 async def bot_start(message: types.Message):
     if not is_private(chat=message.chat):

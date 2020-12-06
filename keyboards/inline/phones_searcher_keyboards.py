@@ -8,13 +8,8 @@ phone_searcher_callback = CallbackData('phone_searcher', 'search_parameter')
 main_phone_searcher_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='Фамилия', callback_data=phone_searcher_callback.new(
-                search_parameter='surname'
-            )),
-        ],
-        [
-            InlineKeyboardButton(text='Имя Отчество', callback_data=phone_searcher_callback.new(
-                search_parameter='name'
+            InlineKeyboardButton(text='ФИО', callback_data=phone_searcher_callback.new(
+                search_parameter='fio'
             )),
         ],
         [
@@ -283,7 +278,7 @@ def get_person_keyboard(person: Person):
                 InlineKeyboardButton(text='Видимый ✅' if person.actual == 'True' else 'Невидимый ❌',
                                      callback_data=person_activation_callback.new(
                                          person_id=person.id,
-                                         is_visible='True'
+                                         is_visible='False' if person.actual == 'True' else 'True'
                                      ))
             ]
         ]

@@ -15,7 +15,7 @@ def get_tuser_info(user: User):
     for group in Group.select(Group).join(Links).join(User).where(User.id == user.id):
         groups_list += group.group_name + ', '
     return f"""Информация о пользователе:
-ID: {user.id}
+ID: {user.telegram_id}
 Фамилия: {user.last_name}
 Имя: {user.first_name}
 Username: {user.username}
@@ -59,9 +59,9 @@ async def is_valid_user(telegram_chat, group_name='Users'):
         # а пользователь останется ожидать авторизации от администратора
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
-                                           first_name=telegram_chat.first_name,
-                                           last_name=telegram_chat.last_name,
-                                           username=telegram_chat.username,
+                                           first_name='' if telegram_chat.username is None else telegram_chat.first_name,
+                                           last_name='' if telegram_chat.username is None else telegram_chat.last_name,
+                                           username='' if telegram_chat.username is None else telegram_chat.username,
                                            status='')
         Links.get_or_create(user=user,
                             group=Group.get(group_name='Unauthorized'))
@@ -125,22 +125,26 @@ def get_person_vcard(person: Person):
     vcf += 'TEL;CELL:' + person.phone + "\n"
     if not person.email == '':
         vcf += 'EMAIL:' + person.email + "\n"
+    vcf += 'TITLE:' + person.position + "\n"
     vcf += 'END:VCARD' + "\n\n"
     return vcf
 
 
 async def send_person_info(person: Person, message: Message):
-    if not person.photo == '':
+    user = User.get(telegram_id=message.chat.id)
+    if user not in User.select(User).join(Links).join(Group).where(Group.group_name == 'PhonesAdmin'):
+        if person.actual == 'False':
+            await dp.bot.send_message(chat_id=message.chat.id, text='Я никого не нашел по указанным параметрам поиска')
+            return
         await dp.bot.send_photo(chat_id=message.chat.id,
                                 photo=person.photo,
                                 caption=get_person_info(person=person))
-    await dp.bot.send_message(chat_id=message.chat.id,
-                              text=get_person_info(person=person),
-                              reply_markup=get_person_keyboard(person=person) if check_valid_tuser(message=message,
-                                                                                                   group_name='PhonesAdmin') else None)
     if not person.phone == '':
         await dp.bot.send_contact(chat_id=message.chat.id,
                                   phone_number=f'+{person.phone}',
                                   first_name=f'{person.surname} {person.name}',
                                   last_name=f'{person.patronymic}',
-                                  vcard=get_person_vcard(person=person))
+                                  vcard=get_person_vcard(person=person),
+                                  reply_markup=get_person_keyboard(person=person) if user in User.select(User).join(
+                                      Links).join(Group).where(Group.group_name == 'PhonesAdmin') else None
+                                  )
