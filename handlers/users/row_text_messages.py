@@ -233,7 +233,7 @@ async def phone_search(message: Message, search_parameter: str):
                 time.sleep(1)
 
 
-def edit_person_info(message, edit_parameter, person_id):
+async def edit_person_info(message, edit_parameter, person_id):
     if await check_valid_tuser(message=message, group_name='PhonesAdmin'):
         if edit_parameter == 'photo':
             await message.answer(
