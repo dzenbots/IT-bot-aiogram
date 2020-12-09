@@ -1,10 +1,11 @@
 from aiogram.types import Message
 from loguru import logger
 
-from data.config import admins
+from data.config import admins, PHONE_SPREADSHEET_ID
 from keyboards.inline.phones_searcher_keyboards import get_person_keyboard
 from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
+from utils.GoogleSheetsAPI import GoogleSync
 from utils.db_api import User, Links, Group, Equipment, Movement
 from utils.db_api.models import Person
 
@@ -149,3 +150,20 @@ async def send_person_info(person: Person, message: Message):
                                   reply_markup=get_person_keyboard(person=person) if user in User.select(User).join(
                                       Links).join(Group).where(Group.group_name == 'PhonesAdmin') else None
                                   )
+
+
+def send_person_info_to_google_sheet(person: Person):
+    GoogleSync(spreadsheet_id=PHONE_SPREADSHEET_ID).write_data_to_range(list_name='База контактов',
+                                                                        range_in_list=f'A{person.id + 1}:H{person.id + 1}',
+                                                                        data=[
+                                                                            [
+                                                                                str(person.surname),
+                                                                                str(person.name),
+                                                                                str(person.patronymic),
+                                                                                str(person.position),
+                                                                                str(person.photo),
+                                                                                str(person.phone),
+                                                                                str(person.email),
+                                                                                str(person.actual)
+                                                                            ]
+                                                                        ])

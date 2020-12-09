@@ -10,10 +10,10 @@ from loader import dp
 from utils import check_valid_tuser, get_equipment_info
 from utils.GoogleSheetsAPI import GoogleSync
 from utils.db_api import User, Group, Equipment, Movement, Person
+from utils.help_functions import send_person_info, send_person_info_to_google_sheet
+
+
 # Добавляет пользователя бота в группу
-from utils.help_functions import send_person_info
-
-
 async def adding_new_group(message: Message, group_name: str):
     if await check_valid_tuser(message=message, group_name='Admins'):
         user = User.get(telegram_id=message.chat.id)
@@ -145,6 +145,23 @@ def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
                                                                                   ])
 
 
+# def send_person_info_to_google_sheet(person: Person):
+#     GoogleSync(spreadsheet_id=PHONE_SPREADSHEET_ID).write_data_to_range(list_name='База контактов',
+#                                                                         range_in_list=f'A{person.id + 1}:H{person.id + 1}',
+#                                                                         data=[
+#                                                                             [
+#                                                                                 str(person.surname),
+#                                                                                 str(person.name),
+#                                                                                 str(person.patronymic),
+#                                                                                 str(person.position),
+#                                                                                 str(person.photo),
+#                                                                                 str(person.phone),
+#                                                                                 str(person.email),
+#                                                                                 str(person.actual)
+#                                                                             ]
+#                                                                         ])
+#
+
 # Создание нового списания
 async def make_spisanie(message: Message, equipment_id: str):
     equipment = Equipment.get(id=int(equipment_id))
@@ -222,21 +239,21 @@ def edit_person_info(message, edit_parameter, person_id):
             await message.answer(
                 text='Для изменения фото контакта необходимо прислать фотографию а не текстовое сообщение')
             return
-        person = Person.get(id=int(person_id))
         if edit_parameter == 'surname':
-            Person.update(surname=message.text).where(Person.id == person.id).execute()
+            Person.update(surname=message.text).where(Person.id == int(person_id)).execute()
         elif edit_parameter == 'name':
-            Person.update(name=message.text).where(Person.id == person.id).execute()
+            Person.update(name=message.text).where(Person.id == int(person_id)).execute()
         elif edit_parameter == 'patronymic':
-            Person.update(patronymic=message.text).where(Person.id == person.id).execute()
+            Person.update(patronymic=message.text).where(Person.id == int(person_id)).execute()
         elif edit_parameter == 'phone':
-            Person.update(phone=message.text).where(Person.id == person.id).execute()
+            Person.update(phone=message.text).where(Person.id == int(person_id)).execute()
         elif edit_parameter == 'position':
-            Person.update(position=message.text).where(Person.id == person.id).execute()
+            Person.update(position=message.text).where(Person.id == int(person_id)).execute()
         elif edit_parameter == 'email':
-            Person.update(email=message.text).where(Person.id == person.id).execute()
+            Person.update(email=message.text).where(Person.id == int(person_id)).execute()
         await message.answer(text='Данные успешно обновлены')
         person = Person.get(id=int(person_id))
+        send_person_info_to_google_sheet(person=person)
         await send_person_info(message=message, person=person)
 
 
