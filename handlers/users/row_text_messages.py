@@ -239,20 +239,46 @@ async def edit_person_info(message, edit_parameter, person_id):
             await message.answer(
                 text='Для изменения фото контакта необходимо прислать фотографию а не текстовое сообщение')
             return
+        user = User.get(telegram_id=message.chat.id)
+        person = Person.get(id=int(person_id))
         if edit_parameter == 'surname':
             Person.update(surname=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New surname is {person.surname}')
         elif edit_parameter == 'name':
             Person.update(name=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New name is {person.name}')
         elif edit_parameter == 'patronymic':
             Person.update(patronymic=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New patronymic is {person.patronymic}')
         elif edit_parameter == 'phone':
             Person.update(phone=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New phone is {person.phone}')
         elif edit_parameter == 'position':
             Person.update(position=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New position is {person.position}')
         elif edit_parameter == 'email':
             Person.update(email=message.text).where(Person.id == int(person_id)).execute()
+            logger.info(
+                f'User {user.telegram_id} changed info to person {person.surname} {person.name} {person.patronymic}')
+            person = Person.get(id=int(person_id))
+            logger.info(f'New e-mail is {person.email}')
         await message.answer(text='Данные успешно обновлены')
-        person = Person.get(id=int(person_id))
+
         send_person_info_to_google_sheet(person=person)
         await send_person_info(message=message, person=person)
 

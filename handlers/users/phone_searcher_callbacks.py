@@ -1,4 +1,5 @@
 from aiogram.types import CallbackQuery
+from loguru import logger
 
 from keyboards.inline import phone_searcher_callback, klass_ruk_seracher_keyboard, klass_ruk_searcher_callback
 from keyboards.inline.phones_searcher_keyboards import person_activation_callback, get_person_keyboard, \
@@ -68,6 +69,8 @@ async def change_person_activity(call: CallbackQuery, callback_data: dict):
             Person.id == int(callback_data.get('person_id'))).execute()
         person = Person.get(id=int(callback_data.get('person_id')))
         send_person_info_to_google_sheet(person=person)
+        logger.info(
+            f'Person {person.surname} {person.name} {person.patronymic} changed status to {"unsearchable" if person.actual == False else "searchable"}')
         await call.message.edit_reply_markup(get_person_keyboard(person=person))
 
 
@@ -119,7 +122,8 @@ async def change_person_activity(call: CallbackQuery, callback_data: dict):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='PhonesAdmin'):
         person = Person.get(id=callback_data.get('person_id'))
-        await call.message.edit_text(text='Введите новый номер телефона в международном формате без +. Например 79161234567')
+        await call.message.edit_text(
+            text='Введите новый номер телефона в международном формате без +. Например 79161234567')
         User.update(status=f'edit_person:phone:{person.id}').where(
             User.telegram_id == call.message.chat.id).execute()
 
