@@ -6,10 +6,10 @@ from keyboards.inline.phones_searcher_keyboards import get_person_keyboard
 from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
 from utils.db_api import User, Links, Group, Equipment, Movement
-# Получить информацию о пользователе, подключавшимся когда-либо к боту
 from utils.db_api.models import Person
 
 
+# Получить информацию о пользователе, подключавшимся когда-либо к боту
 def get_tuser_info(user: User):
     groups_list = ""
     for group in Group.select(Group).join(Links).join(User).where(User.id == user.id):
@@ -59,9 +59,9 @@ async def is_valid_user(telegram_chat, group_name='Users'):
         # а пользователь останется ожидать авторизации от администратора
         logger.info('New unauthorized user connection!')
         user, created = User.get_or_create(telegram_id=telegram_chat.id,
-                                           first_name='' if telegram_chat.username is None else telegram_chat.first_name,
-                                           last_name='' if telegram_chat.username is None else telegram_chat.last_name,
-                                           username='' if telegram_chat.username is None else telegram_chat.username,
+                                           first_name='N/A' if telegram_chat.first_name is None else telegram_chat.first_name,
+                                           last_name='N/A' if telegram_chat.last_name is None else telegram_chat.last_name,
+                                           username='N/A' if telegram_chat.username is None else telegram_chat.username,
                                            status='')
         Links.get_or_create(user=user,
                             group=Group.get(group_name='Unauthorized'))
@@ -136,6 +136,7 @@ async def send_person_info(person: Person, message: Message):
         if person.actual == 'False':
             await dp.bot.send_message(chat_id=message.chat.id, text='Я никого не нашел по указанным параметрам поиска')
             return
+    if not person.photo == '':
         await dp.bot.send_photo(chat_id=message.chat.id,
                                 photo=person.photo,
                                 caption=get_person_info(person=person))

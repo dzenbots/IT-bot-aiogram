@@ -264,7 +264,6 @@ klass_ruk_seracher_keyboard = InlineKeyboardMarkup(
 )
 
 person_activation_callback = CallbackData('person_visible', 'person_id', 'is_visible')
-# TODO add editing functions
 person_edit_callback = CallbackData('person_edit', 'person_id', 'parameter')
 
 
@@ -282,5 +281,54 @@ def get_person_keyboard(person: Person):
                                          is_visible='False' if person.actual == 'True' else 'True'
                                      ))
             ]
+        ]
+    )
+
+
+def get_edit_person_keyboard(person: Person):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='Фамилия', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='surname'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Имя', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='name'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Отчество', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='patronymic'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Телефон', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='phone'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Фото', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='photo'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Должность', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='position'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='E-mail', callback_data=person_edit_callback.new(
+                    person_id=f'{person.id}',
+                    parameter='email'
+                ))
+            ],
         ]
     )

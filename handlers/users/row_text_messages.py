@@ -216,6 +216,30 @@ async def phone_search(message: Message, search_parameter: str):
                 time.sleep(1)
 
 
+def edit_person_info(message, edit_parameter, person_id):
+    if await check_valid_tuser(message=message, group_name='PhonesAdmin'):
+        if edit_parameter == 'photo':
+            await message.answer(
+                text='Для изменения фото контакта необходимо прислать фотографию а не текстовое сообщение')
+            return
+        person = Person.get(id=int(person_id))
+        if edit_parameter == 'surname':
+            Person.update(surname=message.text).where(Person.id == person.id).execute()
+        elif edit_parameter == 'name':
+            Person.update(name=message.text).where(Person.id == person.id).execute()
+        elif edit_parameter == 'patronymic':
+            Person.update(patronymic=message.text).where(Person.id == person.id).execute()
+        elif edit_parameter == 'phone':
+            Person.update(phone=message.text).where(Person.id == person.id).execute()
+        elif edit_parameter == 'position':
+            Person.update(position=message.text).where(Person.id == person.id).execute()
+        elif edit_parameter == 'email':
+            Person.update(email=message.text).where(Person.id == person.id).execute()
+        await message.answer(text='Данные успешно обновлены')
+        person = Person.get(id=int(person_id))
+        await send_person_info(message=message, person=person)
+
+
 # Показывает пользователю список доступных ему фукнций в зависимости от групп, в которых пользователь состоит
 @dp.message_handler(Text(equals=['На главную']))
 async def show_main_menu(message: Message):
@@ -262,6 +286,10 @@ async def reply_row_text(message: Message):
             elif user.status.split(':')[0] == 'phone_search':
                 parameter = user.status.split(':')[1]
                 await phone_search(message=message, search_parameter=parameter)
+            elif user.status.split(':')[0] == 'phone_search':
+                parameter = user.status.split(':')[1]
+                person_id = user.status.split(':')[2]
+                await edit_person_info(message=message, edit_parameter=parameter, person_id=person_id)
             User.update(status='').where(User.id == user.id).execute()
     else:
         await message.answer(text='Дождитесь пока администратор авторизует Вас!')
