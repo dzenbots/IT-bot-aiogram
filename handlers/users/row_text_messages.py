@@ -303,7 +303,7 @@ async def reply_row_text(message: Message):
             elif user.status.split(':')[0] == 'phone_search':
                 parameter = user.status.split(':')[1]
                 await phone_search(message=message, search_parameter=parameter)
-            elif user.status.split(':')[0] == 'phone_search':
+            elif user.status.split(':')[0] == 'edit_person':
                 parameter = user.status.split(':')[1]
                 person_id = user.status.split(':')[2]
                 await edit_person_info(message=message, edit_parameter=parameter, person_id=person_id)

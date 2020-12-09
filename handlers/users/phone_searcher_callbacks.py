@@ -8,7 +8,7 @@ from loader import dp
 from utils import check_valid_tuser
 from utils.db_api import User
 from utils.db_api.models import Person
-from utils.help_functions import send_person_info
+from utils.help_functions import send_person_info, send_person_info_to_google_sheet
 
 
 @dp.callback_query_handler(phone_searcher_callback.filter(search_parameter='fio'))
@@ -67,6 +67,7 @@ async def change_person_activity(call: CallbackQuery, callback_data: dict):
         Person.update(actual=callback_data.get('is_visible')).where(
             Person.id == int(callback_data.get('person_id'))).execute()
         person = Person.get(id=int(callback_data.get('person_id')))
+        send_person_info_to_google_sheet(person=person)
         await call.message.edit_reply_markup(get_person_keyboard(person=person))
 
 

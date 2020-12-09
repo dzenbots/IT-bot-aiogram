@@ -16,8 +16,7 @@ async def phones_update(message: Message):
         cur_persons_count = Person.select().count()
         persons_from_google = GoogleSync(spreadsheet_id=PHONE_SPREADSHEET_ID). \
             read_range(list_name='База контактов',
-                       range_in_list=f'A{cur_persons_count + 2}:F')
-
+                       range_in_list=f'A{cur_persons_count + 2}:H')
         if persons_from_google is not None:
             for person in persons_from_google:
                 if len(person) < 8:

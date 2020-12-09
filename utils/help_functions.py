@@ -112,8 +112,8 @@ def get_equipment_info(equipment: Equipment):
 
 
 def get_person_info(person: Person):
-    ret_str = f'ФИО: {person.surname} {person.name} {person.patronymic}\n'
-    ret_str += f'Должность: {person.position}\n'
+    ret_str = f'{person.surname} {person.name} {person.patronymic}\n'
+    ret_str += f'{person.position}\n'
     if not person.email == '':
         ret_str += f'E-mail: {person.email}'
     return ret_str
@@ -140,7 +140,8 @@ async def send_person_info(person: Person, message: Message):
     if not person.photo == '':
         await dp.bot.send_photo(chat_id=message.chat.id,
                                 photo=person.photo,
-                                caption=get_person_info(person=person))
+                                caption=get_person_info(person=person)
+                                )
     if not person.phone == '':
         await dp.bot.send_contact(chat_id=message.chat.id,
                                   phone_number=f'+{person.phone}',
