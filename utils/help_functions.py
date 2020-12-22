@@ -140,7 +140,7 @@ async def send_person_info(person: Person, message: Message):
     if not person.photo == '':
         await dp.bot.send_photo(chat_id=message.chat.id,
                                 photo=person.photo,
-                                caption=get_person_info(person=person)
+                                # caption=get_person_info(person=person)
                                 )
     if not person.phone == '':
         await dp.bot.send_contact(chat_id=message.chat.id,
