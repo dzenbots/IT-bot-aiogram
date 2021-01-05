@@ -4,13 +4,12 @@ from aiogram.dispatcher.filters import Text
 from aiogram.types import Message
 from loguru import logger
 
-from data.config import INVENTARIZATION_SPREADSHEET_ID
 from keyboards.inline import get_main_inline_keyboard, group_function_keyboard, get_equipment_reply_markup
 from loader import dp
 from utils import check_valid_tuser, get_equipment_info
-from utils.GoogleSheetsAPI import GoogleSync
 from utils.db_api import User, Group, Equipment, Movement, Person
-from utils.help_functions import send_person_info, send_person_info_to_google_sheet
+from utils.help_functions import send_person_info, send_person_info_to_google_sheet, \
+    send_equipment_info_to_google_sheet, send_movement_to_google_sheet
 
 
 # Добавляет пользователя бота в группу
@@ -66,19 +65,19 @@ async def make_serial_num_search(message: Message):
                                          message=message, group_name='Inventarization') else None)
 
 
-# Отправка иинформации об оборудовании в Google-таблицу
-def send_equipment_info_to_google_sheet(equipment: Equipment):
-    GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Список оборудования',
-                                                                                  range_in_list=f'A{equipment.id + 1}:G{equipment.id + 1}',
-                                                                                  data=[[
-                                                                                      str(equipment.it_id),
-                                                                                      str(equipment.pos_in_buh),
-                                                                                      str(equipment.invent_num),
-                                                                                      str(equipment.type),
-                                                                                      str(equipment.mark),
-                                                                                      str(equipment.model),
-                                                                                      str(equipment.serial_num)
-                                                                                  ]])
+# # Отправка иинформации об оборудовании в Google-таблицу
+# def send_equipment_info_to_google_sheet(equipment: Equipment):
+#     GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Список оборудования',
+#                                                                                   range_in_list=f'A{equipment.id + 1}:G{equipment.id + 1}',
+#                                                                                   data=[[
+#                                                                                       str(equipment.it_id),
+#                                                                                       str(equipment.pos_in_buh),
+#                                                                                       str(equipment.invent_num),
+#                                                                                       str(equipment.type),
+#                                                                                       str(equipment.mark),
+#                                                                                       str(equipment.model),
+#                                                                                       str(equipment.serial_num)
+#                                                                                   ]])
 
 
 # Изменение типа в оборудовании
@@ -133,33 +132,16 @@ async def edit_equipment_serial(message: Message, equipment_id: str):
                                  message=message, group_name='Inventarization') else None)
 
 
-def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
-    GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Перемещение оборудования',
-                                                                                  range_in_list=f'A{movement.id + 1}:C{movement.id + 1}',
-                                                                                  data=[
-                                                                                      [
-                                                                                          str(equipment.it_id),
-                                                                                          str(movement.campus),
-                                                                                          str(movement.room)
-                                                                                      ]
-                                                                                  ])
-
-
-# def send_person_info_to_google_sheet(person: Person):
-#     GoogleSync(spreadsheet_id=PHONE_SPREADSHEET_ID).write_data_to_range(list_name='База контактов',
-#                                                                         range_in_list=f'A{person.id + 1}:H{person.id + 1}',
-#                                                                         data=[
-#                                                                             [
-#                                                                                 str(person.surname),
-#                                                                                 str(person.name),
-#                                                                                 str(person.patronymic),
-#                                                                                 str(person.position),
-#                                                                                 str(person.photo),
-#                                                                                 str(person.phone),
-#                                                                                 str(person.email),
-#                                                                                 str(person.actual)
-#                                                                             ]
-#                                                                         ])
+# def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
+#     GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Перемещение оборудования',
+#                                                                                   range_in_list=f'A{movement.id + 1}:C{movement.id + 1}',
+#                                                                                   data=[
+#                                                                                       [
+#                                                                                           str(equipment.it_id),
+#                                                                                           str(movement.campus),
+#                                                                                           str(movement.room)
+#                                                                                       ]
+#                                                                                   ])
 #
 
 # Создание нового списания

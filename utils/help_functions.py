@@ -1,7 +1,7 @@
 from aiogram.types import Message
 from loguru import logger
 
-from data.config import admins, PHONE_SPREADSHEET_ID
+from data.config import admins, PHONE_SPREADSHEET_ID, INVENTARIZATION_SPREADSHEET_ID
 from keyboards.inline.phones_searcher_keyboards import get_person_keyboard
 from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
 from loader import dp
@@ -153,6 +153,35 @@ async def send_person_info(person: Person, message: Message):
                                   )
 
 
+# Отправка иинформации об оборудовании в Google-таблицу
+def send_equipment_info_to_google_sheet(equipment: Equipment):
+    GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Список оборудования',
+                                                                                  range_in_list=f'A{equipment.id + 1}:G{equipment.id + 1}',
+                                                                                  data=[[
+                                                                                      str(equipment.it_id),
+                                                                                      str(equipment.pos_in_buh),
+                                                                                      str(equipment.invent_num),
+                                                                                      str(equipment.type),
+                                                                                      str(equipment.mark),
+                                                                                      str(equipment.model),
+                                                                                      str(equipment.serial_num)
+                                                                                  ]])
+
+
+# Отправка иинформации о перемещении оборудования в Google-таблицу
+def send_movement_to_google_sheet(equipment: Equipment, movement: Movement):
+    GoogleSync(spreadsheet_id=INVENTARIZATION_SPREADSHEET_ID).write_data_to_range(list_name='Перемещение оборудования',
+                                                                                  range_in_list=f'A{movement.id + 1}:C{movement.id + 1}',
+                                                                                  data=[
+                                                                                      [
+                                                                                          str(equipment.it_id),
+                                                                                          str(movement.campus),
+                                                                                          str(movement.room)
+                                                                                      ]
+                                                                                  ])
+
+
+# Отправка иинформации о контакте в Google-таблицу
 def send_person_info_to_google_sheet(person: Person):
     GoogleSync(spreadsheet_id=PHONE_SPREADSHEET_ID).write_data_to_range(list_name='База контактов',
                                                                         range_in_list=f'A{person.id + 1}:H{person.id + 1}',
