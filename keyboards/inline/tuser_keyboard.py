@@ -9,6 +9,8 @@ add_to_group_datas = CallbackData('TAdd', 'group_id', 'user_id')
 
 rm_from_group_datas = CallbackData('TRm', 'group_id', 'user_id')
 
+edit_tuser_datas = CallbackData('TEdit', 'tuser_id', 'parameter')
+
 
 def get_add_tuser_keyboard(user: User):
     return InlineKeyboardMarkup(
@@ -26,6 +28,12 @@ def get_add_tuser_keyboard(user: User):
 def get_tuser_keyboard(user: User):
     return InlineKeyboardMarkup(
         inline_keyboard=[
+            [
+                InlineKeyboardButton(text='Изменить инфо', callback_data=tuser_callback_datas.new(
+                    func='edit_info',
+                    user_id=str(user.id)
+                ))
+            ],
             [
                 InlineKeyboardButton(text='Добавить в группу', callback_data=tuser_callback_datas.new(
                     func='add_Tuser',
@@ -66,3 +74,28 @@ def get_groups_list_to_rm_keyboard(user: User):
                 ))
             ])
     return InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+
+
+def get_edit_tuser_keyboard(user: User):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text='Имя', callback_data=edit_tuser_datas.new(
+                    tuser_id=str(user.id),
+                    parameter='first_name'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Фамилия', callback_data=edit_tuser_datas.new(
+                    tuser_id=str(user.id),
+                    parameter='last_name'
+                ))
+            ],
+            [
+                InlineKeyboardButton(text='Никнейм', callback_data=edit_tuser_datas.new(
+                    tuser_id=str(user.id),
+                    parameter='username'
+                ))
+            ],
+        ]
+    )

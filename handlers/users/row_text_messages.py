@@ -4,12 +4,13 @@ from aiogram.dispatcher.filters import Text
 from aiogram.types import Message
 from loguru import logger
 
-from keyboards.inline import get_main_inline_keyboard, group_function_keyboard, get_equipment_reply_markup
+from keyboards.inline import get_main_inline_keyboard, group_function_keyboard, get_equipment_reply_markup, \
+    get_tuser_keyboard
 from loader import dp
 from utils import check_valid_tuser, get_equipment_info
 from utils.db_api import User, Group, Equipment, Movement, Person
 from utils.help_functions import send_person_info, send_person_info_to_google_sheet, \
-    send_equipment_info_to_google_sheet, send_movement_to_google_sheet
+    send_equipment_info_to_google_sheet, send_movement_to_google_sheet, get_tuser_info
 
 
 # Добавляет пользователя бота в группу
@@ -265,6 +266,22 @@ async def edit_person_info(message, edit_parameter, person_id):
         await send_person_info(message=message, person=person)
 
 
+async def edit_tuser_info(message, edit_parameter, tuser_id):
+    if await check_valid_tuser(message=message, group_name='Admins'):
+        user_to_edit = User.get(id=tuser_id)
+        value = message.text
+        if edit_parameter == 'first_name':
+            User.update(first_name=value).where(User.id == user_to_edit).execute()
+        elif edit_parameter == 'last_name':
+            User.update(last_name=value).where(User.id == user_to_edit).execute()
+        elif edit_parameter == 'username':
+            User.update(username=value).where(User.id == user_to_edit).execute()
+        await message.answer(text='Данные успешно обновлены')
+        user = User.get(id=user_to_edit)
+        await message.answer(text=get_tuser_info(user=user),
+                             reply_markup=get_tuser_keyboard(user=user))
+
+
 # Показывает пользователю список доступных ему фукнций в зависимости от групп, в которых пользователь состоит
 @dp.message_handler(Text(equals=['На главную']))
 async def show_main_menu(message: Message):
@@ -315,6 +332,11 @@ async def reply_row_text(message: Message):
                 parameter = user.status.split(':')[1]
                 person_id = user.status.split(':')[2]
                 await edit_person_info(message=message, edit_parameter=parameter, person_id=person_id)
+            elif user.status.split(':')[0] == 'edit_tuser':
+                parameter = user.status.split(':')[1]
+                tuser_id = user.status.split(':')[2]
+                await edit_tuser_info(message=message, edit_parameter=parameter, tuser_id=tuser_id)
+
             User.update(status='').where(User.id == user.id).execute()
     else:
         await message.answer(text='Дождитесь пока администратор авторизует Вас!')

@@ -1,3 +1,5 @@
+from asyncio import sleep
+
 from aiogram.dispatcher.filters import Command
 from aiogram.types import Message
 
@@ -15,3 +17,4 @@ async def groups_func(message: Message):
         for user in User.select():
             await message.answer(text=get_tuser_info(user=user),
                                  reply_markup=get_tuser_keyboard(user=user))
+            # await sleep(1)

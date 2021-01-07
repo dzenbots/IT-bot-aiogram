@@ -3,7 +3,7 @@ from loguru import logger
 
 from data.config import admins, PHONE_SPREADSHEET_ID, INVENTARIZATION_SPREADSHEET_ID
 from keyboards.inline.phones_searcher_keyboards import get_person_keyboard
-from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard
+from keyboards.inline.tuser_keyboard import get_add_tuser_keyboard, get_tuser_keyboard
 from loader import dp
 from utils.GoogleSheetsAPI import GoogleSync
 from utils.db_api import User, Links, Group, Equipment, Movement
@@ -71,7 +71,8 @@ async def is_valid_user(telegram_chat, group_name='Users'):
                                       text=f'Новый пользователь!')
             await dp.bot.send_message(chat_id=admin,
                                       text=get_tuser_info(user=user),
-                                      reply_markup=get_add_tuser_keyboard(user=user))
+                                      reply_markup=get_tuser_keyboard(user=user))
+                                      # reply_markup=get_add_tuser_keyboard(user=user))
         return False
     if user not in User.select(User).join(Links).join(Group).where(Group.group_name == group_name):
         # Если пользователь не находится в группе, указанной в аргументах
