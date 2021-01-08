@@ -272,10 +272,13 @@ async def edit_tuser_info(message, edit_parameter, tuser_id):
         value = message.text
         if edit_parameter == 'first_name':
             User.update(first_name=value).where(User.id == user_to_edit).execute()
+            logger.info(f'User {message.chat.id} changed first_name to user {user_to_edit.id}: new value is {value}')
         elif edit_parameter == 'last_name':
             User.update(last_name=value).where(User.id == user_to_edit).execute()
+            logger.info(f'User {message.chat.id} changed last_name to user {user_to_edit.id}: new value is {value}')
         elif edit_parameter == 'username':
             User.update(username=value).where(User.id == user_to_edit).execute()
+            logger.info(f'User {message.chat.id} changed username to user {user_to_edit.id}: new value is {value}')
         await message.answer(text='Данные успешно обновлены')
         user = User.get(id=user_to_edit)
         await message.answer(text=get_tuser_info(user=user),
