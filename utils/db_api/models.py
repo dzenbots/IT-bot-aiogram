@@ -1,8 +1,9 @@
-from peewee import CharField, ForeignKeyField, SqliteDatabase, Model
+from peewee import CharField, ForeignKeyField, SqliteDatabase, Model, PostgresqlDatabase
 
 from data.config import DB_FILE_PATH
 
-db = SqliteDatabase(DB_FILE_PATH, pragmas={'foreign_keys': 1})
+# db = SqliteDatabase(DB_FILE_PATH, pragmas={'foreign_keys': 1})
+db = PostgresqlDatabase('test', user='test', password='test')
 
 
 class BaseModel(Model):
