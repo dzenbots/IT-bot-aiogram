@@ -2,12 +2,12 @@ async def on_startup(dp):
     import asyncio
     import filters
     import middlewares
-    from utils.notify_site_admin import scheduler
     filters.setup(dp)
     middlewares.setup(dp)
 
     from utils.notify_admins import on_startup_notify
     await on_startup_notify(dp)
+    from utils.notify_site_admin import scheduler
     asyncio.create_task(scheduler(dp))
 
 
