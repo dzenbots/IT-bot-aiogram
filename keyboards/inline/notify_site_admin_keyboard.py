@@ -9,7 +9,7 @@ def get_update_siteadmin_keyboard():
     ])
     inline_keyboard.append([
         InlineKeyboardButton(text='❌ Отмена',
-                             callback_data='no_update')
+                             callback_data='no_update_menu')
     ])
     ret_keyboard = InlineKeyboardMarkup(
         inline_keyboard=inline_keyboard
@@ -25,7 +25,7 @@ def get_replace_siteadmin_keyboard():
     ])
     inline_keyboard.append([
         InlineKeyboardButton(text='❌ Отмена',
-                             callback_data='no_replace')
+                             callback_data='no_replace_menu')
     ])
     ret_keyboard = InlineKeyboardMarkup(
         inline_keyboard=inline_keyboard
