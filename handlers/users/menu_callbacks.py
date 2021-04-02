@@ -12,7 +12,7 @@ from utils.db_api import User
 
 
 @dp.callback_query_handler(Text(equals='update_menu'))
-async def main_inventarization(call: CallbackQuery):
+async def update_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
         user = User.get(telegram_id=call.message.chat.id)
@@ -49,21 +49,21 @@ async def main_inventarization(call: CallbackQuery):
 
 
 @dp.callback_query_handler(Text(equals='no_update_menu'))
-async def main_inventarization(call: CallbackQuery):
+async def cansel_update_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
         user = User.get(telegram_id=call.message.chat.id)
 
 
 @dp.callback_query_handler(Text(equals='replace_menu'))
-async def main_inventarization(call: CallbackQuery):
+async def replace_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
         user = User.get(telegram_id=call.message.chat.id)
 
 
 @dp.callback_query_handler(Text(equals='no_replace_menu'))
-async def main_inventarization(call: CallbackQuery):
+async def cansel_replace_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
         user = User.get(telegram_id=call.message.chat.id)

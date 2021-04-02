@@ -11,5 +11,6 @@ from .inventarization_callbacks import dp
 from .phone_searcher_callbacks import dp
 from .main_inline_callbacks import dp
 from .tusers_callbacks import dp
+from .menu_callbacks import dp
 
 __all__ = ["dp"]
