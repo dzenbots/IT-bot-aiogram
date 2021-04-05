@@ -6,6 +6,7 @@ import shlex
 from email.header import decode_header, make_header
 from typing import NamedTuple
 
+from loguru import logger
 from pylovepdf.tools.compress import Compress
 
 from .settings import PUBLIC_API_KEY1, PUBLIC_API_KEY2
@@ -41,11 +42,11 @@ class MailWorker:
         self.menu_folder_name = menu_folder_name
 
     def authorize(self, login: str, password: str) -> bool:
-        print(f'Authenticating into {login}...', end='\t')
+        # print(f'Authenticating into {login}...', end='\t')
         try:
             status, message = self.mail.login(login, password)
         except:
-            print('Authentication failed')
+            logger.info('Authentication failed')
             self.auth_status = message[0].decode()
             return False
         if status == 'OK':
@@ -56,9 +57,9 @@ class MailWorker:
     @staticmethod
     def get_message_subject(subject: str):
         return MessageSubject(
-            theme=subject.split(' ')[0].upper(),
-            uk='UK' + subject.split(' ')[1].split('УК')[-1],
-            date=datetime.datetime.strptime(subject.split(' ')[-1], "%d.%m.%Y")
+            theme=subject.split(' ')[0].upper().rstrip('.pdf'),
+            uk='UK' + subject.rstrip('.pdf').split(' ')[1].split('УК')[-1],
+            date=datetime.datetime.strptime(subject.rstrip('.pdf').split(' ')[-1], "%d.%m.%Y")
         )
 
     def get_folder_list(self) -> list[str]:

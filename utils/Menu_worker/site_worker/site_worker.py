@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from requests_toolbelt import MultipartEncoder
 
-from site_worker import ROOT_FOLDER
+from .settings import ROOT_FOLDER
 
 
 class SiteWorker(requests.Session):
