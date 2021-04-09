@@ -58,7 +58,7 @@ class MailWorker:
     def get_message_subject(subject: str):
         return MessageSubject(
             theme=subject.split(' ')[0].upper().rstrip('.pdf'),
-            uk='UK' + subject.rstrip('.pdf').split(' ')[1].split('УК')[-1],
+            uk='UK' + subject.rstrip('.pdf').upper().split(' ')[1].split('УК')[-1],
             date=datetime.datetime.strptime(subject.rstrip('.pdf').split(' ')[-1], "%d.%m.%Y")
         )
 
