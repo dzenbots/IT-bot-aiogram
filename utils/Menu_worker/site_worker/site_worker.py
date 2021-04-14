@@ -69,13 +69,17 @@ class SiteWorker(requests.Session):
         print(' OK')
         return self.response.json()
 
-    def upload_file(self, folder_path, files, root_folder_id):
+    async def upload_file(self, folder_path, files, root_folder_id, dp, call):
         folder_info = self.search_folder(root_folder_id=root_folder_id,
                                          folder_path=folder_path)
         if folder_info:
             key, value = folder_info.popitem()
             for file_path in files:
                 self.process_uploading(folder_id=value, file_path=file_path)
+                await dp.bot.edit_message_text(text=f'Файл {file_path} загружен на сайт',
+                                               chat_id=call.message.chat.id,
+                                               message_id=call.message.message_id,
+                                               reply_markup=None)
 
     def search_folder(self, root_folder_id, folder_path):
         cur_path_id = root_folder_id
@@ -122,7 +126,7 @@ class SiteWorker(requests.Session):
         if self.response.status_code == 200:
             print(' OK')
 
-    def delete_all_in_folder(self, folder_path):
+    async def delete_all_in_folder(self, folder_path, dp, call):
         folder_info = self.search_folder(root_folder_id=ROOT_FOLDER, folder_path=folder_path)
         folder_content = self.get_file_info(filename=folder_path.split('/')[-1],
                                             file_id=folder_info.popitem())
@@ -132,6 +136,10 @@ class SiteWorker(requests.Session):
                 'cmd': 'rm',
                 'targets[]': id
             })
+            await dp.bot.edit_message_text(text=f'Файл {file_name} удален из хранилища сайта',
+                                           reply_markup=None,
+                                           chat_id=call.message.chat.id,
+                                           message_id=call.message.message_id)
 
     def copy_tomorrow_today(self, tomorrow_folder, today_folder):
         src_folder_info = self.search_folder(root_folder_id=ROOT_FOLDER, folder_path=tomorrow_folder)

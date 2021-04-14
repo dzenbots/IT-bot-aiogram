@@ -141,7 +141,7 @@ class PdfCompressor:
 
     def compress_file(self, filepath, output_directory_path):
         self.compressor.add_file(filepath)
-        self.compressor.compression_level = 'extreme'
+        self.compressor.compression_level = 'recommended'
         self.compressor.set_output_folder('./temp')
         self.compressor.execute()
         self.compressor.download()

@@ -21,9 +21,9 @@ async def send_replace_menu_notification(dp, message='test'):
 
 
 async def scheduler(dp):
-    aioschedule.every().day.at('21:02').do(send_update_menu_notification,
-                                          dp=dp,
-                                          message='Обновить меню на завтра?')
+    aioschedule.every().day.at('17:05').do(send_update_menu_notification,
+                                           dp=dp,
+                                           message='Обновить меню на завтра?')
     aioschedule.every().day.at('14:54').do(send_replace_menu_notification,
                                            dp=dp,
                                            message='Заменить сегодняшнее меню на завтрашнее?')
