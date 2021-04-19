@@ -92,7 +92,7 @@ class MailWorker:
         status, data = self.mail.fetch(id, "(RFC822)")
         messages = list()
         if status == 'OK':
-            raw_message = (data[0][1]).decode('utf-8')
+            raw_message = data[0][1].decode('utf-8')
             message = email.message_from_string(raw_message)
             for part in message.walk():
                 if 'application' in part.get_content_type().split('/'):
