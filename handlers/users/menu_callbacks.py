@@ -19,7 +19,6 @@ from utils.db_api import User
 
 
 async def update_menu(call, dp):
-    # user = User.get(telegram_id=call.message.chat.id)
     mw = MailWorker(server=IMAP_SERVER,
                     save_dir=DIRECTORY_TO_SAVE_FILES,
                     menu_folder_name=MENU_FOLDER_NAME)
