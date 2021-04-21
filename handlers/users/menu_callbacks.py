@@ -15,10 +15,11 @@ from utils.Menu_worker.mail_worker.mail_worker import get_public_key
 from utils.Menu_worker.mail_worker.settings import DIRECTORY_TO_SAVE_COMMPRESSED_FILES
 from utils.Menu_worker.site_worker import SiteWorker, BASE_SCHOOL_SITE_ADDR, SITE_LOGIN, SITE_PASSWORD, \
     TOMORROW_MENU_FOLDER_PATH_IN_SITE_STORAGE, ROOT_FOLDER
+from utils.Menu_worker.site_worker.settings import TODAY_MENU_FOLDER_PATH_IN_SITE_STORAGE
 from utils.db_api import User
 
 
-async def update_menu(call, dp):
+async def update_tomorrow_menu(call, dp):
     mw = MailWorker(server=IMAP_SERVER,
                     save_dir=DIRECTORY_TO_SAVE_FILES,
                     menu_folder_name=MENU_FOLDER_NAME)
@@ -121,7 +122,7 @@ async def update_menu(call, dp):
 async def update_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
-        asyncio.create_task(update_menu(call, dp))
+        asyncio.create_task(update_tomorrow_menu(call, dp))
 
 
 @dp.callback_query_handler(Text(equals='no_update_menu'))
@@ -134,11 +135,32 @@ async def cancel_update_menu_callback(call: CallbackQuery):
                                        reply_markup=None)
 
 
+async def update_today_menu(call, dp):
+    sw = SiteWorker(base_url=BASE_SCHOOL_SITE_ADDR,
+                    login=SITE_LOGIN,
+                    password=SITE_PASSWORD)
+    await dp.bot.edit_message_text(text=f'Авторизация на сайте школы пройдена',
+                                   reply_markup=None,
+                                   chat_id=call.message.chat.id,
+                                   message_id=call.message.message_id)
+
+    if sw.authorized:
+        await sw.delete_all_in_folder(folder_path=TODAY_MENU_FOLDER_PATH_IN_SITE_STORAGE, dp=dp, call=call)
+        await dp.bot.edit_message_text(text='Предыдущие файлы с меню удалены',
+                                       message_id=call.message.message_id,
+                                       chat_id=call.message.chat.id)
+        await sw.copy_tomorrow_today(call, dp)
+        await dp.bot.edit_message_text(text='Файлы с меню на сегодня успешно обновлены',
+                                       message_id=call.message.message_id,
+                                       chat_id=call.message.chat.id,
+                                       reply_markup=None)
+
+
 @dp.callback_query_handler(Text(equals='replace_menu'))
 async def replace_menu_callback(call: CallbackQuery):
     await call.answer(cache_time=1)
     if await check_valid_tuser(message=call.message, group_name='SiteAdmin'):
-        user = User.get(telegram_id=call.message.chat.id)
+        asyncio.create_task(update_today_menu(call, dp))
 
 
 @dp.callback_query_handler(Text(equals='no_replace_menu'))

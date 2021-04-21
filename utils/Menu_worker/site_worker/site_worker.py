@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 from requests_toolbelt import MultipartEncoder
 
-from .settings import ROOT_FOLDER
+from .settings import ROOT_FOLDER, TOMORROW_MENU_FOLDER_PATH_IN_SITE_STORAGE, TODAY_MENU_FOLDER_PATH_IN_SITE_STORAGE
 
 
 class SiteWorker(requests.Session):
@@ -141,7 +141,11 @@ class SiteWorker(requests.Session):
                                            chat_id=call.message.chat.id,
                                            message_id=call.message.message_id)
 
-    def copy_tomorrow_today(self, tomorrow_folder, today_folder):
+    async def copy_tomorrow_today(self,
+                                  call,
+                                  dp,
+                                  tomorrow_folder=TOMORROW_MENU_FOLDER_PATH_IN_SITE_STORAGE,
+                                  today_folder=TODAY_MENU_FOLDER_PATH_IN_SITE_STORAGE):
         src_folder_info = self.search_folder(root_folder_id=ROOT_FOLDER, folder_path=tomorrow_folder)
         src_folder_id = list(src_folder_info.values())[0]
         folder_content = self.get_file_info(filename=tomorrow_folder.split('/')[-1],
@@ -160,3 +164,19 @@ class SiteWorker(requests.Session):
                                          'src': src_folder_id
                                      },
                                      headers={'Content-Type': 'application/json'})
+            await dp.bot.edit_message_text(text=f'Файл {filename} обновлен',
+                                           message_id=call.message.message_id,
+                                           chat_id=call.message.chat.id,
+                                           reply_markup=None)
+
+    # def copy_tommorow_menu_to_today_folder(self,
+    #                                        call,
+    #                                        dp,
+    #                                        tomorrow_folder=TOMORROW_MENU_FOLDER_PATH_IN_SITE_STORAGE,
+    #                                        today_folder=TODAY_MENU_FOLDER_PATH_IN_SITE_STORAGE):
+    #     tomorrow_folder_info = self.search_folder(root_folder_id=ROOT_FOLDER, folder_path=tomorrow_folder)
+    #     today_folder = self.search_folder(root_folder_id=ROOT_FOLDER, folder_path=today_folder)
+    #     tomorrow_folder_content = self.get_file_info(filename=tomorrow_folder.split('/')[-1],
+    #                                                  file_id=tomorrow_folder.popitem())
+    #     target_files = {item.get('name'): item.get('hash') for item in tomorrow_folder_content.get('files')}
+    #
